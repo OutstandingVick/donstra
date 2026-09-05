@@ -4,7 +4,7 @@ export const ZERO_DIGEST = `0x${"00".repeat(32)}` as const;
 export const AGENT = "0x1111111111111111111111111111111111111111" as const;
 
 export function testimony(overrides: Partial<TestimonyPayload> = {}): TestimonyPayload {
-  const createdAt = 1_800_000_000_000;
+  const createdAt = 1_700_000_000_000;
   return {
     schema: "donstra.testimony.v1",
     agent: AGENT,
