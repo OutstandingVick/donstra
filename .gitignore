@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.next/
+coverage/
+.env
+.env.local
+.DS_Store
+*.log
+.donstra/
+artifacts/
+cache/
+out/
+__pycache__/
+.pytest_cache/
+.venv/
+
