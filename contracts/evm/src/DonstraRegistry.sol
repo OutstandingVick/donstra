@@ -30,6 +30,7 @@ contract DonstraRegistry {
     error Unauthorized();
     error InvalidState();
     error InvalidAction();
+    error InvalidBond();
     error InvalidWindow();
     error TransferFailed();
 
@@ -46,6 +47,7 @@ contract DonstraRegistry {
     ) external payable {
         if (commitments[receiptId].status != Status.None) revert InvalidState();
         if (expiresAt <= block.timestamp) revert InvalidWindow();
+        if (msg.value > type(uint96).max) revert InvalidBond();
         commitments[receiptId] = Commitment({
             agent: msg.sender,
             testimonyDigest: testimonyDigest,

@@ -11,6 +11,5 @@
     "test": "vitest run"
   },
   "dependencies": { "@noble/hashes": "^1.8.0" },
-  "devDependencies": { "typescript": "^5.7.3", "vitest": "^2.1.9", "@types/node": "^22.10.7" }
+  "devDependencies": { "typescript": "^5.7.3", "vitest": "^4.1.11", "@types/node": "^22.10.7" }
 }
-

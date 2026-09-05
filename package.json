@@ -4,13 +4,12 @@
   "private": true,
   "workspaces": ["packages/*", "apps/*", "demo"],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "typecheck": "npm run typecheck --workspaces --if-present",
+    "build": "npm run build --workspace @donstra/sdk && npm run build --workspace @donstra/genlayer && npm run build --workspace @donstra/web",
+    "test": "npm run build --workspace @donstra/sdk && npm run test --workspace @donstra/sdk",
+    "typecheck": "npm run build --workspace @donstra/sdk && npm run typecheck --workspace @donstra/genlayer && npm run typecheck --workspace @donstra/web && npm run typecheck --workspace @donstra/demo",
     "demo": "npm run demo --workspace @donstra/demo",
     "dev": "npm run dev --workspace @donstra/web"
   },
   "engines": { "node": ">=20" },
   "license": "MIT"
 }
-

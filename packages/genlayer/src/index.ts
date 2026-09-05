@@ -46,9 +46,11 @@ export class GenLayerAdjudicator implements Adjudicator {
       address: this.contractAddress,
       functionName: "get_verdict",
       args: [commitment.receiptId],
-      stateStatus: "accepted",
     }) as { verdict?: Verdict; reason?: string };
-    if (!result.verdict) throw new Error("GenLayer returned no adjudication verdict");
+    const acceptedVerdicts = new Set(["GENUINE_REASONABLE", "GENUINE_NEGLIGENT", "INCONCLUSIVE"]);
+    if (!result.verdict || !acceptedVerdicts.has(result.verdict)) {
+      throw new Error("GenLayer returned an invalid adjudication verdict");
+    }
     return {
       verdict: result.verdict as "GENUINE_REASONABLE" | "GENUINE_NEGLIGENT" | "INCONCLUSIVE",
       detail: result.reason ?? "GenLayer validators reached consensus.",

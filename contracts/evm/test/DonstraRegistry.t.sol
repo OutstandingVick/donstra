@@ -50,7 +50,7 @@ contract DonstraRegistryTest {
         registry.execute(receiptId, address(counter), 0, data, deadline);
         registry.challenge(receiptId);
         registry.resolve(receiptId, DonstraRegistry.Verdict.Reasonable);
-        (,,,,,,, DonstraRegistry.Status status) = registry.commitments(receiptId);
+        (,,,,,,,, DonstraRegistry.Status status) = registry.commitments(receiptId);
         assert(status == DonstraRegistry.Status.Resolved);
     }
 }
