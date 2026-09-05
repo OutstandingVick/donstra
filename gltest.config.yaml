@@ -1,0 +1,8 @@
+networks:
+  localnet:
+    rpc_url: http://localhost:4000/api
+  studionet:
+    rpc_url: https://studio.genlayer.com/api
+  testnet_bradbury:
+    accounts:
+      - "${ACCOUNT_PRIVATE_KEY_1}"
