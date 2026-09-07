@@ -1,4 +1,4 @@
-import { isAddress, isHex, keccak256, toBytes } from "viem";
+import { isAddress, isHex, keccak256, toBytes, zeroAddress } from "viem";
 import type { Address, Hex, RelayIdentity } from "./types.js";
 
 export interface RelayConfig {
@@ -25,7 +25,9 @@ function rpcUrl(value: string, name: string): string {
 }
 
 function address(value: string, name: string): Address {
-  if (!isAddress(value)) throw new Error(`${name} must be a valid EVM address`);
+  if (!isAddress(value) || value.toLowerCase() === zeroAddress) {
+    throw new Error(`${name} must be a nonzero EVM address`);
+  }
   return value;
 }
 

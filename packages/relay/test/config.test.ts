@@ -24,6 +24,13 @@ describe("loadRelayConfig", () => {
       .toThrow("RELAY_CONTRACT_ADDRESS");
   });
 
+  it("rejects placeholder zero addresses", () => {
+    expect(() => loadRelayConfig({
+      ...valid,
+      GENLAYER_CONTRACT_ADDRESS: "0x0000000000000000000000000000000000000000",
+    })).toThrow("nonzero");
+  });
+
   it("rejects malformed private keys", () => {
     expect(() => loadRelayConfig({ ...valid, REPORTER_PRIVATE_KEY: "0x1234" }))
       .toThrow("32 bytes");

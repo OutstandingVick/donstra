@@ -89,7 +89,11 @@ contract DonstraRegistry {
         item.status = Status.Executed;
         item.actionTransactionId = keccak256(abi.encode(block.chainid, address(this), receiptId, block.number));
         (bool ok, bytes memory returned) = target.call{value: value}(data);
-        if (!ok) assembly { revert(add(returned, 32), mload(returned)) }
+        if (!ok) {
+            assembly {
+                revert(add(returned, 32), mload(returned))
+            }
+        }
         emit ActionExecuted(receiptId, target, item.actionTransactionId);
         return returned;
     }

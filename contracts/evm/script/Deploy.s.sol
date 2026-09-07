@@ -18,7 +18,9 @@ contract Deploy {
         address sourceContract = vm.envAddress("GENLAYER_CONTRACT_ADDRESS");
         string memory sourceNetwork = vm.envString("GENLAYER_NETWORK");
         address reporter = vm.envAddress("REPORTER_ADDRESS");
-        uint64 maxSourceAge = uint64(vm.envUint("MAX_SOURCE_AGE_SECONDS"));
+        uint256 configuredMaxSourceAge = vm.envUint("MAX_SOURCE_AGE_SECONDS");
+        require(configuredMaxSourceAge > 0 && configuredMaxSourceAge <= type(uint64).max, "invalid source age");
+        uint64 maxSourceAge = uint64(configuredMaxSourceAge);
 
         address[] memory reporters = new address[](1);
         reporters[0] = reporter;

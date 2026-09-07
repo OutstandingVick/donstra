@@ -24,9 +24,9 @@ locked, or unfunded.
 npm run deploy:genlayer
 ```
 
-Record both `contractAddress` and `transactionHash`. Wait until the transaction
-is accepted or finalized in the GenLayer explorer before configuring the EVM
-side.
+Record both `contractAddress` and `transactionHash`. The deployment command
+waits for finalization; independently confirm that status in the GenLayer
+explorer before configuring the EVM side.
 
 ## 3. Prepare an EVM deployer and reporter
 

@@ -15,7 +15,7 @@ export default async function main(client: GenLayerClient<any>) {
   const hash = await client.deployContract({ code, args: [] });
   const receipt = await client.waitForTransactionReceipt({
     hash: hash as TransactionHash,
-    status: TransactionStatus.ACCEPTED,
+    status: TransactionStatus.FINALIZED,
     retries: 200,
   });
   if (receipt.txExecutionResultName === ExecutionResult.FINISHED_WITH_ERROR) {
