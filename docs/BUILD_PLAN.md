@@ -13,6 +13,9 @@
 - [x] GenLayer evidence-vs-claim adjudicator
 - [x] Independent validator decision comparison
 - [x] GenLayerJS adapter and evidence digest verification
+- [x] EIP-712 authenticated settlement relay with immutable reporter quorum
+- [x] GenLayer finality observer and EVM submission operator
+- [x] GenLayer and EVM deployment/verification tooling
 - [x] Three-act demo using separate receipts
 - [x] Interactive web receipt trail
 - [x] SDK, Solidity, and GenLayer test suites

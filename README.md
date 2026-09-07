@@ -21,6 +21,7 @@ rewrites and action substitution. See [the threat model](docs/THREAT_MODEL.md).
 |---|---|
 | `packages/sdk` | Typed commit, execute, reveal lifecycle and encrypted storage |
 | `packages/genlayer` | Live GenLayerJS adjudication adapter and evidence capture |
+| `packages/relay` | Finality verification, EIP-712 attestations, and EVM settlement |
 | `contracts/genlayer` | Python Intelligent Contract for validator consensus |
 | `contracts/evm` | Bonded action-executing commitment registry |
 | `demo` | Three-receipt terminal demonstration |
@@ -49,3 +50,6 @@ and **Onchain Justice**.
 The repository contains the full protocol implementation, contracts, adapters,
 tests, demo, and frontend. Network deployment addresses remain environment
 configuration because publishing transactions requires a funded deployer.
+
+See [the live deployment runbook](docs/DEPLOYMENT.md) for the secure GenLayer,
+relay, registry, and verification sequence.
