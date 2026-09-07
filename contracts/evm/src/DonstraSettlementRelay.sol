@@ -27,6 +27,9 @@ contract DonstraSettlementRelay {
     address public immutable sourceContract;
     bytes32 public immutable sourceChainId;
     uint8 public immutable quorum;
+    uint64 public immutable maxSourceAge;
+
+    uint64 public constant MAX_FUTURE_DRIFT = 5 minutes;
 
     mapping(address => bool) public isReporter;
     mapping(bytes32 => bool) public processed;
@@ -44,16 +47,26 @@ contract DonstraSettlementRelay {
     error InvalidReporter();
     error InsufficientQuorum();
     error AlreadyProcessed();
+    error ExpiredSettlement();
+    error StaleSettlement();
+    error FutureSettlement();
 
-    constructor(address sourceContract_, bytes32 sourceChainId_, address[] memory reporters_, uint8 quorum_) {
+    constructor(
+        address sourceContract_,
+        bytes32 sourceChainId_,
+        address[] memory reporters_,
+        uint8 quorum_,
+        uint64 maxSourceAge_
+    ) {
         if (
             sourceContract_ == address(0) || sourceChainId_ == bytes32(0) || quorum_ == 0
-                || quorum_ > reporters_.length
+                || quorum_ > reporters_.length || maxSourceAge_ == 0
         ) revert InvalidConfiguration();
 
         sourceContract = sourceContract_;
         sourceChainId = sourceChainId_;
         quorum = quorum_;
+        maxSourceAge = maxSourceAge_;
 
         for (uint256 i; i < reporters_.length; ++i) {
             address reporter = reporters_[i];
@@ -87,6 +100,14 @@ contract DonstraSettlementRelay {
             revert InvalidSettlement();
         }
         if (settlement.verdict > uint8(DonstraRegistry.Verdict.Inconclusive)) revert InvalidSettlement();
+        if (settlement.validUntil < settlement.adjudicatedAt || block.timestamp > settlement.validUntil) {
+            revert ExpiredSettlement();
+        }
+        if (settlement.adjudicatedAt > block.timestamp + MAX_FUTURE_DRIFT) revert FutureSettlement();
+        if (
+            settlement.adjudicatedAt <= block.timestamp
+                && block.timestamp - settlement.adjudicatedAt > maxSourceAge
+        ) revert StaleSettlement();
         if (signatures.length < quorum) revert InsufficientQuorum();
 
         bytes32 digest = settlementDigest(settlement);
