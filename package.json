@@ -6,17 +6,20 @@
   "scripts": {
     "build": "npm run build --workspace @donstra/sdk && npm run build --workspace @donstra/genlayer && npm run build --workspace @donstra/web",
     "test": "npm run build --workspace @donstra/sdk && npm run test --workspace @donstra/sdk",
-    "typecheck": "npm run build --workspace @donstra/sdk && npm run typecheck --workspace @donstra/genlayer && npm run typecheck --workspace @donstra/web && npm run typecheck --workspace @donstra/demo",
+    "typecheck": "npm run build --workspace @donstra/sdk && npm run typecheck --workspace @donstra/genlayer && npm run typecheck --workspace @donstra/relay && npm run typecheck --workspace @donstra/web && npm run typecheck --workspace @donstra/demo && tsc -p deploy/tsconfig.json",
     "demo": "npm run demo --workspace @donstra/demo",
     "dev": "npm run dev --workspace @donstra/web",
     "deploy:genlayer": "genlayer deploy --contract contracts/genlayer/donstra_adjudicator.py",
-    "deploy:evm": "forge script script/Deploy.s.sol:Deploy --root contracts/evm --broadcast"
+    "deploy:evm": "forge script script/Deploy.s.sol:Deploy --root contracts/evm --broadcast",
+    "verify:deployments": "tsx deploy/verify.ts"
   },
   "engines": { "node": ">=20" },
   "license": "MIT",
   "devDependencies": {
     "genlayer": "0.39.2",
-    "genlayer-js": "^1.1.8"
+    "genlayer-js": "^1.1.8",
+    "tsx": "^4.20.3",
+    "viem": "^2.37.3"
   },
   "overrides": {
     "dockerode": { "uuid": "^11.1.1" }
