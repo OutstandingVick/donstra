@@ -24,13 +24,7 @@ contract Deploy {
         reporters[0] = reporter;
 
         vm.startBroadcast();
-        relay = new DonstraSettlementRelay(
-            sourceContract,
-            keccak256(bytes(sourceNetwork)),
-            reporters,
-            1,
-            maxSourceAge
-        );
+        relay = new DonstraSettlementRelay(sourceContract, keccak256(bytes(sourceNetwork)), reporters, 1, maxSourceAge);
         vm.stopBroadcast();
     }
 }

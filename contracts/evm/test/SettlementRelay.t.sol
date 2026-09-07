@@ -12,7 +12,10 @@ interface Vm {
 
 contract RelayCounter {
     uint256 public value;
-    function set(uint256 next) external { value = next; }
+
+    function set(uint256 next) external {
+        value = next;
+    }
 }
 
 contract SettlementRelayTest {
@@ -27,9 +30,8 @@ contract SettlementRelayTest {
         vm.warp(1_700_000_000);
         address[] memory reporters = new address[](1);
         reporters[0] = vm.addr(REPORTER_KEY);
-        relay = new DonstraSettlementRelay(
-            address(0x1234), keccak256("genlayer-testnet-bradbury"), reporters, 1, 1 days
-        );
+        relay =
+            new DonstraSettlementRelay(address(0x1234), keccak256("genlayer-testnet-bradbury"), reporters, 1, 1 days);
         registry = relay.registry();
         counter = new RelayCounter();
     }
@@ -53,9 +55,7 @@ contract SettlementRelayTest {
         bytes[] memory signatures = new bytes[](1);
         signatures[0] = _sign(0xB0B, relay.settlementDigest(settlement));
 
-        (bool ok,) = address(relay).call(
-            abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures))
-        );
+        (bool ok,) = address(relay).call(abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures)));
         assert(!ok);
         assert(!relay.processed(receiptId));
     }
@@ -67,9 +67,7 @@ contract SettlementRelayTest {
         signatures[0] = _sign(REPORTER_KEY, relay.settlementDigest(settlement));
         vm.warp(settlement.validUntil + 1);
 
-        (bool ok,) = address(relay).call(
-            abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures))
-        );
+        (bool ok,) = address(relay).call(abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures)));
         assert(!ok);
         assert(!relay.processed(receiptId));
     }
@@ -81,9 +79,7 @@ contract SettlementRelayTest {
         signatures[0] = _sign(REPORTER_KEY, relay.settlementDigest(settlement));
         relay.settle(settlement, signatures);
 
-        (bool ok,) = address(relay).call(
-            abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures))
-        );
+        (bool ok,) = address(relay).call(abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures)));
         assert(!ok);
     }
 
@@ -91,9 +87,7 @@ contract SettlementRelayTest {
         receiptId = keccak256("relay-receipt");
         bytes memory data = abi.encodeCall(RelayCounter.set, (42));
         uint64 deadline = uint64(block.timestamp + 1 hours);
-        bytes32 actionDigest = keccak256(
-            abi.encode(block.chainid, address(counter), 0, keccak256(data), deadline)
-        );
+        bytes32 actionDigest = keccak256(abi.encode(block.chainid, address(counter), 0, keccak256(data), deadline));
         registry.commit(receiptId, keccak256("testimony"), actionDigest, deadline);
         registry.execute(receiptId, address(counter), 0, data, deadline);
         registry.challenge(receiptId);
@@ -104,11 +98,7 @@ contract SettlementRelayTest {
         return abi.encodePacked(r, s, v);
     }
 
-    function _settlement(bytes32 receiptId)
-        private
-        view
-        returns (DonstraSettlementRelay.Settlement memory)
-    {
+    function _settlement(bytes32 receiptId) private view returns (DonstraSettlementRelay.Settlement memory) {
         return DonstraSettlementRelay.Settlement({
             receiptId: receiptId,
             adjudicationTxHash: keccak256("genlayer-transaction"),

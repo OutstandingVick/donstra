@@ -5,7 +5,10 @@ import {DonstraRegistry} from "../src/DonstraRegistry.sol";
 
 contract Counter {
     uint256 public value;
-    function set(uint256 next) external { value = next; }
+
+    function set(uint256 next) external {
+        value = next;
+    }
 }
 
 contract DonstraRegistryTest {
@@ -32,11 +35,11 @@ contract DonstraRegistryTest {
         bytes memory committedData = abi.encodeCall(Counter.set, (42));
         bytes memory differentData = abi.encodeCall(Counter.set, (99));
         uint64 deadline = uint64(block.timestamp + 100);
-        bytes32 actionDigest = keccak256(abi.encode(block.chainid, address(counter), 0, keccak256(committedData), deadline));
+        bytes32 actionDigest =
+            keccak256(abi.encode(block.chainid, address(counter), 0, keccak256(committedData), deadline));
         registry.commit(receiptId, keccak256("testimony"), actionDigest, deadline);
-        (bool ok,) = address(registry).call(
-            abi.encodeCall(DonstraRegistry.execute, (receiptId, address(counter), 0, differentData, deadline))
-        );
+        (bool ok,) = address(registry)
+            .call(abi.encodeCall(DonstraRegistry.execute, (receiptId, address(counter), 0, differentData, deadline)));
         assert(!ok);
         assert(counter.value() == 0);
     }

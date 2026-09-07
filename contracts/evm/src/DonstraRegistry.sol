@@ -4,8 +4,19 @@ pragma solidity ^0.8.24;
 /// @title DonstraRegistry
 /// @notice Executes pre-committed actions and escrows the agent's accountability bond.
 contract DonstraRegistry {
-    enum Status { None, Committed, Executed, Challenged, Resolved }
-    enum Verdict { Reasonable, Negligent, Fabricated, Inconclusive }
+    enum Status {
+        None,
+        Committed,
+        Executed,
+        Challenged,
+        Resolved
+    }
+    enum Verdict {
+        Reasonable,
+        Negligent,
+        Fabricated,
+        Inconclusive
+    }
 
     struct Commitment {
         address agent;
@@ -22,7 +33,9 @@ contract DonstraRegistry {
     address public immutable adjudicator;
     mapping(bytes32 => Commitment) public commitments;
 
-    event TestimonyCommitted(bytes32 indexed receiptId, address indexed agent, bytes32 testimonyDigest, bytes32 actionDigest, uint256 bond);
+    event TestimonyCommitted(
+        bytes32 indexed receiptId, address indexed agent, bytes32 testimonyDigest, bytes32 actionDigest, uint256 bond
+    );
     event ActionExecuted(bytes32 indexed receiptId, address indexed target, bytes32 actionTransactionId);
     event Challenged(bytes32 indexed receiptId, address indexed challenger);
     event Resolved(bytes32 indexed receiptId, Verdict verdict, address bondRecipient);
@@ -39,12 +52,10 @@ contract DonstraRegistry {
         adjudicator = adjudicator_;
     }
 
-    function commit(
-        bytes32 receiptId,
-        bytes32 testimonyDigest,
-        bytes32 actionDigest,
-        uint64 expiresAt
-    ) external payable {
+    function commit(bytes32 receiptId, bytes32 testimonyDigest, bytes32 actionDigest, uint64 expiresAt)
+        external
+        payable
+    {
         if (commitments[receiptId].status != Status.None) revert InvalidState();
         if (expiresAt <= block.timestamp) revert InvalidWindow();
         if (msg.value > type(uint96).max) revert InvalidBond();
@@ -64,13 +75,10 @@ contract DonstraRegistry {
 
     /// @notice Executes the exact action represented by actionDigest.
     /// digest = keccak256(abi.encode(chainid, target, value, keccak256(data), deadline)).
-    function execute(
-        bytes32 receiptId,
-        address target,
-        uint256 value,
-        bytes calldata data,
-        uint64 deadline
-    ) external returns (bytes memory result) {
+    function execute(bytes32 receiptId, address target, uint256 value, bytes calldata data, uint64 deadline)
+        external
+        returns (bytes memory result)
+    {
         Commitment storage item = commitments[receiptId];
         if (item.agent != msg.sender) revert Unauthorized();
         if (item.status != Status.Committed) revert InvalidState();
@@ -99,9 +107,7 @@ contract DonstraRegistry {
         Commitment storage item = commitments[receiptId];
         if (item.status != Status.Challenged) revert InvalidState();
         item.status = Status.Resolved;
-        address recipient = verdict == Verdict.Negligent || verdict == Verdict.Fabricated
-            ? item.challenger
-            : item.agent;
+        address recipient = verdict == Verdict.Negligent || verdict == Verdict.Fabricated ? item.challenger : item.agent;
         uint256 amount = item.bond;
         item.bond = 0;
         if (amount > 0) {

@@ -60,8 +60,8 @@ contract DonstraSettlementRelay {
         uint64 maxSourceAge_
     ) {
         if (
-            sourceContract_ == address(0) || sourceChainId_ == bytes32(0) || quorum_ == 0
-                || quorum_ > reporters_.length || maxSourceAge_ == 0
+            sourceContract_ == address(0) || sourceChainId_ == bytes32(0) || quorum_ == 0 || quorum_ > reporters_.length
+                || maxSourceAge_ == 0
         ) revert InvalidConfiguration();
 
         sourceContract = sourceContract_;
@@ -106,10 +106,9 @@ contract DonstraSettlementRelay {
             revert ExpiredSettlement();
         }
         if (settlement.adjudicatedAt > block.timestamp + MAX_FUTURE_DRIFT) revert FutureSettlement();
-        if (
-            settlement.adjudicatedAt <= block.timestamp
-                && block.timestamp - settlement.adjudicatedAt > maxSourceAge
-        ) revert StaleSettlement();
+        if (settlement.adjudicatedAt <= block.timestamp && block.timestamp - settlement.adjudicatedAt > maxSourceAge) {
+            revert StaleSettlement();
+        }
         if (signatures.length < quorum) revert InsufficientQuorum();
 
         bytes32 digest = settlementDigest(settlement);

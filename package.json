@@ -4,8 +4,8 @@
   "private": true,
   "workspaces": ["packages/*", "apps/*", "demo"],
   "scripts": {
-    "build": "npm run build --workspace @donstra/sdk && npm run build --workspace @donstra/genlayer && npm run build --workspace @donstra/web",
-    "test": "npm run build --workspace @donstra/sdk && npm run test --workspace @donstra/sdk",
+    "build": "npm run build --workspace @donstra/sdk && npm run build --workspace @donstra/genlayer && npm run build --workspace @donstra/relay && npm run build --workspace @donstra/web",
+    "test": "npm run build --workspace @donstra/sdk && npm run test --workspace @donstra/sdk && npm run test --workspace @donstra/relay",
     "typecheck": "npm run build --workspace @donstra/sdk && npm run typecheck --workspace @donstra/genlayer && npm run typecheck --workspace @donstra/relay && npm run typecheck --workspace @donstra/web && npm run typecheck --workspace @donstra/demo && tsc -p deploy/tsconfig.json",
     "demo": "npm run demo --workspace @donstra/demo",
     "dev": "npm run dev --workspace @donstra/web",

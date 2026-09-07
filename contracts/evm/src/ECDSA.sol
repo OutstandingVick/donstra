@@ -3,8 +3,7 @@ pragma solidity ^0.8.24;
 
 /// @notice Minimal strict ECDSA recovery for fixed 65-byte relay signatures.
 library ECDSA {
-    bytes32 private constant SECP256K1_HALF_ORDER =
-        0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0;
+    bytes32 private constant SECP256K1_HALF_ORDER = 0x7fffffffffffffffffffffffffffffff5d576e7357a4501ddfe92f46681b20a0;
 
     error InvalidSignature();
     error InvalidSignatureLength();
