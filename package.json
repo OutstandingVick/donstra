@@ -9,7 +9,8 @@
     "typecheck": "npm run build --workspace @donstra/sdk && npm run typecheck --workspace @donstra/genlayer && npm run typecheck --workspace @donstra/web && npm run typecheck --workspace @donstra/demo",
     "demo": "npm run demo --workspace @donstra/demo",
     "dev": "npm run dev --workspace @donstra/web",
-    "deploy:genlayer": "genlayer deploy --contract contracts/genlayer/donstra_adjudicator.py"
+    "deploy:genlayer": "genlayer deploy --contract contracts/genlayer/donstra_adjudicator.py",
+    "deploy:evm": "forge script script/Deploy.s.sol:Deploy --root contracts/evm --broadcast"
   },
   "engines": { "node": ">=20" },
   "license": "MIT",

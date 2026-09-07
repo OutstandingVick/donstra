@@ -35,6 +35,7 @@ contract DonstraSettlementRelay {
     mapping(bytes32 => bool) public processed;
 
     event ReporterConfigured(address indexed reporter);
+    event RegistryDeployed(address indexed registry);
     event SettlementRelayed(
         bytes32 indexed receiptId,
         bytes32 indexed adjudicationTxHash,
@@ -76,6 +77,7 @@ contract DonstraSettlementRelay {
         }
 
         registry = new DonstraRegistry(address(this));
+        emit RegistryDeployed(address(registry));
     }
 
     function settlementDigest(Settlement calldata settlement) public view returns (bytes32) {
