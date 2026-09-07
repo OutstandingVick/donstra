@@ -2,6 +2,7 @@ import { isAddress, isHex, keccak256, toBytes } from "viem";
 import type { Address, Hex, RelayIdentity } from "./types.js";
 
 export interface RelayConfig {
+  genLayerNetwork: string;
   genLayerRpcUrl: string;
   evmRpcUrl: string;
   identity: RelayIdentity;
@@ -44,6 +45,7 @@ export function loadRelayConfig(env: NodeJS.ProcessEnv = process.env): RelayConf
   if (!Number.isSafeInteger(targetChainId)) throw new Error("EVM_CHAIN_ID is outside the safe integer range");
 
   return {
+    genLayerNetwork: network,
     genLayerRpcUrl: rpcUrl(required(env, "GENLAYER_RPC_URL"), "GENLAYER_RPC_URL"),
     evmRpcUrl: rpcUrl(required(env, "EVM_RPC_URL"), "EVM_RPC_URL"),
     identity: {
