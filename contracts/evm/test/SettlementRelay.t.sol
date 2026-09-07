@@ -36,13 +36,7 @@ contract SettlementRelayTest {
 
     function testRelaysSignedVerdictIntoRegistry() public {
         bytes32 receiptId = _challengeReceipt();
-        DonstraSettlementRelay.Settlement memory settlement = DonstraSettlementRelay.Settlement({
-            receiptId: receiptId,
-            adjudicationTxHash: keccak256("genlayer-transaction"),
-            verdict: uint8(DonstraRegistry.Verdict.Reasonable),
-            adjudicatedAt: uint64(block.timestamp),
-            validUntil: uint64(block.timestamp + 1 hours)
-        });
+        DonstraSettlementRelay.Settlement memory settlement = _settlement(receiptId);
 
         bytes[] memory signatures = new bytes[](1);
         signatures[0] = _sign(REPORTER_KEY, relay.settlementDigest(settlement));
@@ -51,6 +45,46 @@ contract SettlementRelayTest {
         (,,,,,,,, DonstraRegistry.Status status) = registry.commitments(receiptId);
         assert(status == DonstraRegistry.Status.Resolved);
         assert(relay.processed(receiptId));
+    }
+
+    function testRejectsUnauthorizedReporter() public {
+        bytes32 receiptId = _challengeReceipt();
+        DonstraSettlementRelay.Settlement memory settlement = _settlement(receiptId);
+        bytes[] memory signatures = new bytes[](1);
+        signatures[0] = _sign(0xB0B, relay.settlementDigest(settlement));
+
+        (bool ok,) = address(relay).call(
+            abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures))
+        );
+        assert(!ok);
+        assert(!relay.processed(receiptId));
+    }
+
+    function testRejectsExpiredAttestation() public {
+        bytes32 receiptId = _challengeReceipt();
+        DonstraSettlementRelay.Settlement memory settlement = _settlement(receiptId);
+        bytes[] memory signatures = new bytes[](1);
+        signatures[0] = _sign(REPORTER_KEY, relay.settlementDigest(settlement));
+        vm.warp(settlement.validUntil + 1);
+
+        (bool ok,) = address(relay).call(
+            abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures))
+        );
+        assert(!ok);
+        assert(!relay.processed(receiptId));
+    }
+
+    function testRejectsReceiptReplay() public {
+        bytes32 receiptId = _challengeReceipt();
+        DonstraSettlementRelay.Settlement memory settlement = _settlement(receiptId);
+        bytes[] memory signatures = new bytes[](1);
+        signatures[0] = _sign(REPORTER_KEY, relay.settlementDigest(settlement));
+        relay.settle(settlement, signatures);
+
+        (bool ok,) = address(relay).call(
+            abi.encodeCall(DonstraSettlementRelay.settle, (settlement, signatures))
+        );
+        assert(!ok);
     }
 
     function _challengeReceipt() private returns (bytes32 receiptId) {
@@ -68,5 +102,19 @@ contract SettlementRelayTest {
     function _sign(uint256 key, bytes32 digest) private returns (bytes memory) {
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(key, digest);
         return abi.encodePacked(r, s, v);
+    }
+
+    function _settlement(bytes32 receiptId)
+        private
+        view
+        returns (DonstraSettlementRelay.Settlement memory)
+    {
+        return DonstraSettlementRelay.Settlement({
+            receiptId: receiptId,
+            adjudicationTxHash: keccak256("genlayer-transaction"),
+            verdict: uint8(DonstraRegistry.Verdict.Reasonable),
+            adjudicatedAt: uint64(block.timestamp),
+            validUntil: uint64(block.timestamp + 1 hours)
+        });
     }
 }
