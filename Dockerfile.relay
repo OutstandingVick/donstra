@@ -1,0 +1,17 @@
+FROM node:22-bookworm-slim AS build
+WORKDIR /app
+COPY package.json package-lock.json tsconfig.base.json ./
+COPY packages/relay/package.json packages/relay/package.json
+RUN npm ci --workspace @donstra/relay --include-workspace-root
+COPY packages/relay packages/relay
+RUN npm run build --workspace @donstra/relay && npm prune --omit=dev
+
+FROM node:22-bookworm-slim AS runtime
+ENV NODE_ENV=production
+USER node
+WORKDIR /app
+COPY --from=build --chown=node:node /app/node_modules ./node_modules
+COPY --from=build --chown=node:node /app/packages/relay/package.json ./packages/relay/package.json
+COPY --from=build --chown=node:node /app/packages/relay/dist ./packages/relay/dist
+EXPOSE 8787
+CMD ["node", "packages/relay/dist/service.js"]
