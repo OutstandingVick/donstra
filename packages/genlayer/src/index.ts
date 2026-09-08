@@ -1,6 +1,7 @@
 import { sha256 } from "@noble/hashes/sha256";
 import { bytesToHex } from "@noble/hashes/utils";
 import type { Adjudicator, CommitmentRecord, Hex, TestimonyPayload, Verdict } from "@donstra/sdk";
+import { hashAction, hashTestimony } from "@donstra/sdk";
 import type { GenLayerClient, TransactionHash } from "genlayer-js/types";
 import { TransactionStatus } from "genlayer-js/types";
 
@@ -46,11 +47,15 @@ export class GenLayerAdjudicator implements Adjudicator {
       address: this.contractAddress,
       functionName: "get_verdict",
       args: [commitment.receiptId],
-    }) as { verdict?: Verdict; reason?: string };
+    }) as { verdict?: Verdict; reason?: string; receipt_id?: string; testimony_digest?: string; action_digest?: string; commitment_timestamp?: string };
     const acceptedVerdicts = new Set(["GENUINE_REASONABLE", "GENUINE_NEGLIGENT", "INCONCLUSIVE"]);
     if (!result.verdict || !acceptedVerdicts.has(result.verdict)) {
       throw new Error("GenLayer returned an invalid adjudication verdict");
     }
+    if (result.receipt_id?.toLowerCase() !== commitment.receiptId.toLowerCase()) throw new Error("GenLayer verdict is bound to a different receipt");
+    if (result.testimony_digest?.toLowerCase() !== hashTestimony(payload).toLowerCase()) throw new Error("GenLayer verdict is bound to different testimony");
+    if (result.action_digest?.toLowerCase() !== hashAction(payload.proposedAction).toLowerCase()) throw new Error("GenLayer verdict is bound to a different action");
+    if (result.commitment_timestamp !== String(Math.floor(commitment.committedAt / 1000))) throw new Error("GenLayer verdict is bound to a different commitment time");
     return {
       verdict: result.verdict as "GENUINE_REASONABLE" | "GENUINE_NEGLIGENT" | "INCONCLUSIVE",
       detail: result.reason ?? "GenLayer validators reached consensus.",
