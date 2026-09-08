@@ -3,6 +3,12 @@ import type { GenLayerClient, TransactionHash } from "genlayer-js/types";
 import type { Address, GenLayerObservation, Hex, VerdictName } from "./types.js";
 import { VERDICT_INDEX } from "./types.js";
 
+export interface ExpectedCommitmentBinding {
+  testimonyDigest: Hex;
+  actionDigest: Hex;
+  committedAt: bigint;
+}
+
 function timestampSeconds(receipt: {
   lastVoteTimestamp?: string;
   currentTimestamp?: string;
@@ -31,6 +37,7 @@ export async function observeFinalizedVerdict(
   sourceContract: Address,
   receiptId: Hex,
   adjudicationTxHash: Hex,
+  expected: ExpectedCommitmentBinding,
 ): Promise<GenLayerObservation> {
   const receipt = await client.waitForTransactionReceipt({
     hash: adjudicationTxHash as TransactionHash,
@@ -54,8 +61,27 @@ export async function observeFinalizedVerdict(
     address: sourceContract,
     functionName: "get_verdict",
     args: [receiptId],
-  }) as { verdict?: unknown; reason?: unknown };
+  }) as {
+    verdict?: unknown;
+    reason?: unknown;
+    receipt_id?: unknown;
+    testimony_digest?: unknown;
+    action_digest?: unknown;
+    commitment_timestamp?: unknown;
+  };
   if (!isVerdictName(stored.verdict)) throw new Error("GenLayer contract returned an unsupported verdict");
+  if (typeof stored.receipt_id !== "string" || stored.receipt_id.toLowerCase() !== receiptId.toLowerCase()) {
+    throw new Error("GenLayer verdict is bound to a different receipt");
+  }
+  if (typeof stored.testimony_digest !== "string" || stored.testimony_digest.toLowerCase() !== expected.testimonyDigest.toLowerCase()) {
+    throw new Error("GenLayer verdict testimony does not match the EVM commitment");
+  }
+  if (typeof stored.action_digest !== "string" || stored.action_digest.toLowerCase() !== expected.actionDigest.toLowerCase()) {
+    throw new Error("GenLayer verdict action does not match the EVM commitment");
+  }
+  if (stored.commitment_timestamp !== expected.committedAt.toString()) {
+    throw new Error("GenLayer verdict timestamp does not match the EVM commitment");
+  }
 
   return {
     receiptId,
