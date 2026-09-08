@@ -47,9 +47,11 @@ and **Onchain Justice**.
 
 ## Status
 
-The repository contains the full protocol implementation, contracts, adapters,
-tests, demo, and frontend. Network deployment addresses remain environment
-configuration because publishing transactions requires a funded deployer.
+The repository contains the protocol implementation, hardened bond lifecycle,
+commitment-bound GenLayer adjudication, authenticated 2-of-3-capable settlement,
+reporter service, tests, demo, and live onchain dashboard. The initial GenLayer
+contract is finalized on Studionet; the commitment-bound revision and EVM
+contracts remain deployment gates requiring user-controlled funded signers.
 
 See [the live deployment runbook](docs/DEPLOYMENT.md) for the secure GenLayer,
 relay, registry, and verification sequence.

@@ -24,13 +24,21 @@ testimony as its accountable basis before executing the action.
 - **Future evidence:** timestamps are an explicit validator decision field.
 - **Storage loss:** classified `UNAVAILABLE`, not falsely accused as fabrication.
 - **Prompt injection:** contract prompts mark testimony/evidence as untrusted data.
+- **Escrow cross-subsidy:** action value must accompany execution and cannot be
+  drawn from pooled accountability bonds.
+- **Challenge spam:** challengers escrow collateral that is awarded to the agent
+  after a reasonable verdict.
+- **Stuck funds:** expiry, unchallenged, and adjudication-timeout paths terminate
+  the lifecycle; recipients withdraw accrued balances separately.
+- **Verdict substitution:** reporters compare the finalized GenLayer receipt,
+  testimony digest, action digest, receipt ID, and commitment timestamp against
+  the challenged EVM record before signing.
 
 ## Remaining production work
 
-- Make the EVM settlement relay trust-minimized across GenLayer and the registry.
-- Add commitment cancellation/expiry and challenge-response timeouts.
-- Require challenger collateral to discourage spam.
 - Archive mutable evidence rather than relying only on refetching URLs.
 - Rate-limit nonce grinding and define one commitment per mandate decision slot.
 - Replace local encryption-key handling with audited KMS or threshold encryption.
 - Audit arbitrary-call execution and reentrancy before holding meaningful value.
+- Replace the hackathon reporter committee with a light-client or protocol-native
+  GenLayer verification mechanism when one is production-supported.
