@@ -57,7 +57,11 @@ contract DonstraSettlementRelay {
         bytes32 sourceChainId_,
         address[] memory reporters_,
         uint8 quorum_,
-        uint64 maxSourceAge_
+        uint64 maxSourceAge_,
+        uint96 minimumAgentBond_,
+        uint96 minimumChallengeBond_,
+        uint64 challengeWindow_,
+        uint64 adjudicationWindow_
     ) {
         if (
             sourceContract_ == address(0) || sourceChainId_ == bytes32(0) || quorum_ == 0 || quorum_ > reporters_.length
@@ -76,7 +80,9 @@ contract DonstraSettlementRelay {
             emit ReporterConfigured(reporter);
         }
 
-        registry = new DonstraRegistry(address(this));
+        registry = new DonstraRegistry(
+            address(this), minimumAgentBond_, minimumChallengeBond_, challengeWindow_, adjudicationWindow_
+        );
         emit RegistryDeployed(address(registry));
     }
 
