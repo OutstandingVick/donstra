@@ -30,18 +30,19 @@ explorer before configuring the EVM side.
 
 ## 3. Prepare an EVM deployer and reporter
 
-Use a supported EVM testnet and encrypted Foundry keystores:
+Use Sepolia and separate encrypted Foundry keystores. A production-style demo
+uses three independently controlled reporter keys and a two-signature quorum:
 
 ```bash
 cast wallet import donstra-deployer --interactive
-cast wallet import donstra-reporter --interactive
 cast wallet address --account donstra-deployer
-cast wallet address --account donstra-reporter
 ```
 
 Fund the deployer with that network's test token. Copy `deploy/.env.example` to
-an ignored local environment file and set the GenLayer address, exact GenLayer
-network alias, reporter address, EVM RPC URL, and maximum source age.
+an ignored local environment file and set the finalized GenLayer address, exact
+network alias, comma-separated reporter addresses, quorum, bond policy, time
+windows, EVM RPC URL, and maximum source age. Reporter keys must not be held by
+the deployer or stored together.
 
 ## 4. Deploy relay and registry
 
@@ -56,7 +57,8 @@ npm run deploy:evm -- --rpc-url "$EVM_RPC_URL" --account donstra-deployer --send
 ```
 
 The `RegistryDeployed` event identifies the registry created by the relay. Save
-the broadcast transaction hash, relay address, and registry address.
+the broadcast transaction hash, relay address, registry address, reporter set,
+quorum, bond minimums, and timeout policy.
 
 ## 5. Verify both deployments
 
@@ -84,6 +86,28 @@ For a quorum larger than one, collect one artifact from each reporter and pass
 all files to `submit`. The CLI rejects artifacts that describe different
 settlements and sorts recovered signer addresses for the on-chain uniqueness
 check.
+
+## 7. Run reporter services
+
+Each reporter operator runs in a separate trust domain with its own key and API
+token. The service exposes an unauthenticated `/healthz` endpoint and an
+authenticated `POST /v1/attest` endpoint. It caps request bodies and concurrent
+finality jobs, emits structured JSON logs, and shuts down gracefully.
+
+```bash
+docker build -f Dockerfile.relay -t donstra-relay .
+docker run --read-only --cap-drop=ALL --env-file packages/relay/.env.local \
+  -p 8787:8787 donstra-relay
+
+curl -H "Authorization: Bearer $OPERATOR_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"receiptId":"0x...","adjudicationTxHash":"0x..."}' \
+  http://localhost:8787/v1/attest
+```
+
+Deploy at least two reporter instances under independent credentials for the
+documented 2-of-3 policy. Alert on process restarts, repeated finality errors,
+authentication failures, and challenges nearing their adjudication deadline.
 
 ## Deployment record
 
