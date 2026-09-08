@@ -1,4 +1,5 @@
 export * from "./abi.js";
+export * from "./attest.js";
 export * from "./config.js";
 export * from "./observe.js";
 export * from "./signing.js";

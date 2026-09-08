@@ -1,38 +1,15 @@
 #!/usr/bin/env node
 
 import { readFileSync } from "node:fs";
-import { createClient } from "genlayer-js";
 import { loadRelayConfig } from "./config.js";
-import { observeFinalizedVerdict } from "./observe.js";
-import { createSettlement, recoverSettlementSigner, signSettlement } from "./signing.js";
+import { artifactPayload, attestFinalizedReceipt, type AttestationArtifact } from "./attest.js";
 import { submitSettlement } from "./submit.js";
-import type { Address, Hex, SettlementPayload } from "./types.js";
-
-interface AttestationArtifact {
-  version: 1;
-  payload: {
-    receiptId: Hex;
-    adjudicationTxHash: Hex;
-    verdict: number;
-    adjudicatedAt: string;
-    validUntil: string;
-  };
-  signer: Address;
-  signature: Hex;
-}
+import type { Hex, SettlementPayload } from "./types.js";
 
 function usage(): never {
   throw new Error(
     "Usage: donstra-relay attest <receipt-id> <genlayer-tx-hash> | submit <attestation.json> [...more]",
   );
-}
-
-function artifactPayload(artifact: AttestationArtifact): SettlementPayload {
-  return {
-    ...artifact.payload,
-    adjudicatedAt: BigInt(artifact.payload.adjudicatedAt),
-    validUntil: BigInt(artifact.payload.validUntil),
-  };
 }
 
 function samePayload(left: SettlementPayload, right: SettlementPayload): boolean {
@@ -50,26 +27,7 @@ async function main() {
   if (command === "attest") {
     if (args.length !== 2) usage();
     const [receiptId, adjudicationTxHash] = args as [Hex, Hex];
-    const client = createClient({ endpoint: config.genLayerRpcUrl });
-    const observation = await observeFinalizedVerdict(
-      client,
-      config.identity.sourceContract,
-      receiptId,
-      adjudicationTxHash,
-    );
-    const payload = createSettlement(observation, config.attestationTtlSeconds);
-    const signature = await signSettlement(config.reporterPrivateKey, payload, config.identity);
-    const signer = await recoverSettlementSigner(signature, payload, config.identity);
-    const artifact: AttestationArtifact = {
-      version: 1,
-      payload: {
-        ...payload,
-        adjudicatedAt: payload.adjudicatedAt.toString(),
-        validUntil: payload.validUntil.toString(),
-      },
-      signer,
-      signature,
-    };
+    const artifact = await attestFinalizedReceipt(config, receiptId, adjudicationTxHash);
     process.stdout.write(`${JSON.stringify(artifact, null, 2)}\n`);
     return;
   }
