@@ -1,5 +1,6 @@
 # { "Depends": "py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6" }
 
+import hashlib
 import json
 from genlayer import *
 import genlayer.gl.vm as glvm
@@ -10,6 +11,10 @@ class DonstraAdjudicator(gl.Contract):
 
     def __init__(self):
         self.verdicts = TreeMap()
+
+    def _digest(self, domain: str, value: object) -> str:
+        canonical = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+        return "0x" + hashlib.sha256((domain + "\n" + canonical).encode("utf-8")).hexdigest()
 
     def _evaluate(self, commitment_timestamp: str, testimony_json: str, evidence_json: str) -> dict:
         prompt = f"""
@@ -66,10 +71,27 @@ Use INCONCLUSIVE when the evidence is insufficient or contradictory.
         testimony_json: str,
         evidence_json: str,
     ) -> dict:
-        if receipt_id in self.verdicts:
+        receipt_key = receipt_id.lower()
+        if receipt_key in self.verdicts:
             raise Exception("Receipt already adjudicated")
         if len(testimony_json) > 24000 or len(evidence_json) > 48000:
             raise Exception("Adjudication input too large")
+        if not commitment_timestamp.isdigit() or int(commitment_timestamp) <= 0:
+            raise Exception("Invalid commitment timestamp")
+
+        testimony = json.loads(testimony_json)
+        if not isinstance(testimony, dict) or testimony.get("schema") != "donstra.testimony.v1":
+            raise Exception("Invalid testimony schema")
+        if not isinstance(testimony.get("proposedAction"), dict):
+            raise Exception("Invalid proposed action")
+        derived_receipt = self._digest(
+            "DONSTRA_RECEIPT_V1",
+            {"agent": str(testimony.get("agent", "")).lower(), "nonce": testimony.get("nonce")},
+        )
+        if derived_receipt.lower() != receipt_key:
+            raise Exception("Receipt does not match testimony")
+        testimony_digest = self._digest("DONSTRA_TESTIMONY_V1", testimony)
+        action_digest = self._digest("DONSTRA_ACTION_V1", testimony["proposedAction"])
 
         def leader_fn() -> dict:
             return self._evaluate(commitment_timestamp, testimony_json, evidence_json)
@@ -86,10 +108,14 @@ Use INCONCLUSIVE when the evidence is insufficient or contradictory.
             )
 
         result = glvm.run_nondet_unsafe(leader_fn, validator_fn)
-        self.verdicts[receipt_id] = json.dumps(result, sort_keys=True)
+        result["receipt_id"] = receipt_key
+        result["testimony_digest"] = testimony_digest
+        result["action_digest"] = action_digest
+        result["commitment_timestamp"] = commitment_timestamp
+        self.verdicts[receipt_key] = json.dumps(result, sort_keys=True)
         return result
 
     @gl.public.view
     def get_verdict(self, receipt_id: str) -> dict:
-        value = self.verdicts.get(receipt_id)
+        value = self.verdicts.get(receipt_id.lower())
         return json.loads(value) if value else {}
