@@ -27,4 +27,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.12" }
+      - run: python -m pip install --upgrade pip
+      - run: python -m pip install -r contracts/genlayer/requirements.txt
       - run: python -m py_compile contracts/genlayer/donstra_adjudicator.py
+      - run: python -m pytest -q
+  relay-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f Dockerfile.relay -t donstra-relay:ci .
