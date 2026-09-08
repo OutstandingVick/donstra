@@ -19,10 +19,17 @@
 - [x] Three-act demo using separate receipts
 - [x] Interactive web receipt trail
 - [x] SDK, Solidity, and GenLayer test suites
+- [x] Escrow isolation between action value and accountability bonds
+- [x] Challenge collateral, bounded windows, cancellation, and timeout recovery
+- [x] Pull-based bond withdrawals
+- [x] Multi-reporter deployment and policy verification
+- [x] Cross-chain testimony, action, receipt, and timestamp binding
+- [x] Live onchain dashboard with wallet-signed lifecycle actions
 
 ## Deployment gate
 
-- [ ] Deploy `DonstraAdjudicator` to Studionet or Bradbury
+- [x] Deploy the initial `DonstraAdjudicator` to Studionet
+- [ ] Deploy the commitment-bound `DonstraAdjudicator` revision to Studionet
 - [ ] Deploy `DonstraRegistry` with the settlement relay as adjudicator
 - [ ] Put addresses in `apps/web/.env.local`
 - [ ] Run one real reasonable and one real negligent consensus transaction
@@ -30,3 +37,12 @@
 
 Deployment is intentionally not faked in source control. It requires a funded,
 user-controlled deployer and produces externally verifiable transaction links.
+
+## Production-ready hackathon gate
+
+- [ ] Complete an independent smart-contract review and freeze deployment bytecode
+- [ ] Configure three separate reporter keys with a 2-of-3 quorum
+- [ ] Run live reasonable, negligent, fabricated, and timeout lifecycle cases
+- [ ] Confirm the dashboard against deployed contracts in desktop and mobile browsers
+- [ ] Deploy the relay operator with secret isolation, health checks, retries, and alerts
+- [ ] Publish contract source, addresses, policy values, transaction links, and a status page
