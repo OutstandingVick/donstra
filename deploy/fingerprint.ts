@@ -19,6 +19,6 @@ export function releaseFingerprint(root = process.cwd()) {
   }));
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1]?.endsWith("fingerprint.ts")) {
   process.stdout.write(`${JSON.stringify(releaseFingerprint(), null, 2)}\n`);
 }

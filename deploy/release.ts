@@ -45,6 +45,6 @@ export function buildReleaseRecord(env: NodeJS.ProcessEnv = process.env) {
   };
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1]?.endsWith("release.ts")) {
   process.stdout.write(`${JSON.stringify(buildReleaseRecord(), null, 2)}\n`);
 }
