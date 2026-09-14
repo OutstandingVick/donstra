@@ -64,7 +64,7 @@ const chainId = Number(process.env.NEXT_PUBLIC_EVM_CHAIN_ID ?? "11155111");
 const deploymentBlock = BigInt(process.env.NEXT_PUBLIC_REGISTRY_DEPLOYMENT_BLOCK ?? "0");
 const explorerUrl = process.env.NEXT_PUBLIC_EVM_EXPLORER_URL ?? "https://sepolia.etherscan.io";
 const genLayerExplorer = process.env.NEXT_PUBLIC_GENLAYER_EXPLORER_URL ?? "https://explorer-studio.genlayer.com";
-const genLayerContract = process.env.NEXT_PUBLIC_GENLAYER_CONTRACT_ADDRESS ?? "0x8fa892db48782e95737DCf2a160686327BaE8cF6";
+const genLayerContract = process.env.NEXT_PUBLIC_GENLAYER_CONTRACT_ADDRESS;
 
 type EthereumProvider = EIP1193Provider & { request(args: { method: string; params?: unknown[] }): Promise<unknown> };
 declare global { interface Window { ethereum?: EthereumProvider } }
@@ -192,7 +192,7 @@ export function ReceiptDashboard() {
   return (
     <section className="receipts" id="receipts">
       <header><div><p className="eyebrow">Live receipt trail</p><h2>Proof you can inspect onchain.</h2></div><span className="network">● {chain.name} + GenLayer Studionet</span></header>
-      {state === "unconfigured" && <p className="notice">EVM deployment pending. The finalized <a href={`${genLayerExplorer}/address/${genLayerContract}`} target="_blank">GenLayer adjudicator</a> is live; set the public registry RPC and address after Sepolia deployment.</p>}
+      {state === "unconfigured" && <p className="notice">Live deployment configuration is pending.{genLayerContract && <> Inspect the <a href={`${genLayerExplorer}/address/${genLayerContract}`} target="_blank" rel="noreferrer">GenLayer adjudicator</a>.</>}</p>}
       {state === "error" && <p className="notice error">Live registry unavailable: {message}</p>}
       {state === "loading" && <p className="notice">Loading verified onchain receipts…</p>}
       {state === "ready" && receipts.length === 0 && <p className="notice">Registry connected. No commitments have been recorded yet.</p>}
