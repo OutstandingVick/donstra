@@ -11,6 +11,7 @@
     "dev": "npm run dev --workspace @donstra/web",
     "deploy:genlayer": "genlayer deploy --contract contracts/genlayer/donstra_adjudicator.py",
     "deploy:evm": "forge script script/Deploy.s.sol:Deploy --root contracts/evm --broadcast",
+    "release:fingerprint": "tsx deploy/fingerprint.ts",
     "verify:deployments": "tsx deploy/verify.ts"
   },
   "engines": { "node": ">=20" },
