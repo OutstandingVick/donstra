@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./dashboard.css";
+import "./release-status.css";
 
 export const metadata: Metadata = {
   title: "Donstra — Proof Before Action",

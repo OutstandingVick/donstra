@@ -1,9 +1,11 @@
 import { ReceiptDashboard, WalletNav } from "./dashboard";
+import { ReleaseStatus } from "./release-status";
 
 export default function Home() {
   return (
     <main>
       <WalletNav />
+      <ReleaseStatus />
       <section className="hero" id="top">
         <p className="eyebrow">Testimony integrity for the agentic economy</p>
         <h1>Proof before<br/><em>the action.</em></h1>
