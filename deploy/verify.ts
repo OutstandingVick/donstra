@@ -1,6 +1,7 @@
 import { createClient } from "genlayer-js";
-import { createPublicClient, getAddress, http, type Address } from "viem";
+import { createPublicClient, http, type Address } from "viem";
 import { loadRelayConfig, registryAbi, settlementRelayAbi } from "../packages/relay/src/index.js";
+import { loadDeploymentPolicy } from "./config.js";
 
 function required(name: string): string {
   const value = process.env[name]?.trim();
@@ -16,8 +17,9 @@ function positive(name: string): bigint {
 
 async function main() {
   const config = loadRelayConfig();
-  const expectedReporters = required("REPORTER_ADDRESSES").split(",").map((value) => getAddress(value.trim()));
-  const expectedQuorum = positive("REPORTER_QUORUM");
+  const deployment = loadDeploymentPolicy();
+  const expectedReporters = deployment.reporters;
+  const expectedQuorum = BigInt(deployment.quorum);
   const expectedPolicy = {
     minimumAgentBond: positive("MINIMUM_AGENT_BOND_WEI"),
     minimumChallengeBond: positive("MINIMUM_CHALLENGE_BOND_WEI"),
@@ -28,13 +30,14 @@ async function main() {
 
   const evm = createPublicClient({ transport: http(config.evmRpcUrl) });
   const genlayer = createClient({ endpoint: config.genLayerRpcUrl });
-  const [chainId, bytecode, registry, sourceContract, sourceChainId, quorum, genLayerCode] = await Promise.all([
+  const [chainId, bytecode, registry, sourceContract, sourceChainId, quorum, maxSourceAge, genLayerCode] = await Promise.all([
     evm.getChainId(),
     evm.getCode({ address: config.identity.relayContract }),
     evm.readContract({ address: config.identity.relayContract, abi: settlementRelayAbi, functionName: "registry" }),
     evm.readContract({ address: config.identity.relayContract, abi: settlementRelayAbi, functionName: "sourceContract" }),
     evm.readContract({ address: config.identity.relayContract, abi: settlementRelayAbi, functionName: "sourceChainId" }),
     evm.readContract({ address: config.identity.relayContract, abi: settlementRelayAbi, functionName: "quorum" }),
+    evm.readContract({ address: config.identity.relayContract, abi: settlementRelayAbi, functionName: "maxSourceAge" }),
     genlayer.getContractCode(config.identity.sourceContract),
   ]);
 
@@ -44,6 +47,7 @@ async function main() {
   if (sourceContract.toLowerCase() !== config.identity.sourceContract.toLowerCase()) throw new Error("Relay references the wrong GenLayer adjudicator");
   if (sourceChainId.toLowerCase() !== config.identity.sourceChainId.toLowerCase()) throw new Error("Relay references the wrong GenLayer network");
   if (BigInt(quorum) !== expectedQuorum) throw new Error("Relay quorum does not match deployment policy");
+  if (BigInt(maxSourceAge) !== deployment.maxSourceAgeSeconds) throw new Error("Relay source-age policy does not match deployment policy");
 
   const registryAddress = registry as Address;
   const [registryCode, minimumAgentBond, minimumChallengeBond, challengeWindow, adjudicationWindow, reporterChecks] = await Promise.all([

@@ -56,6 +56,13 @@ export const settlementRelayAbi = [
   },
   {
     type: "function",
+    name: "maxSourceAge",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "uint64" }],
+  },
+  {
+    type: "function",
     name: "isReporter",
     stateMutability: "view",
     inputs: [{ name: "", type: "address" }],
