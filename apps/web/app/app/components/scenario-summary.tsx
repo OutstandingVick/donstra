@@ -22,7 +22,7 @@ export function ScenarioSummary({ scenario }: { scenario: Scenario }) {
       <div className={`flex flex-col gap-3 border-t px-5 py-4 text-sm sm:flex-row sm:items-center sm:px-6 ${violatesMandate ? "border-[#A94C4E]/30 bg-[#5C1A1B]/25 text-[#FFB7B7]" : "border-[#16DB65]/25 bg-[#16DB65]/10 text-[#80F4A9]"}`}>
         {violatesMandate ? <AlertTriangle size={18} className="shrink-0" aria-hidden="true" /> : <span className="size-2 shrink-0 rounded-full bg-[#4BED86]" />}
         <span className="font-semibold">{scenario.result}</span>
-        <ArrowRight size={16} className="hidden text-white/30 sm:block" aria-hidden="true" />
+        <ArrowRight size={16} className="hidden text-white/50 sm:block" aria-hidden="true" />
         <span className="text-white/55">Confidence is recorded evidence, not permission to exceed policy.</span>
       </div>
     </section>
@@ -32,7 +32,7 @@ export function ScenarioSummary({ scenario }: { scenario: Scenario }) {
 function Metric({ label, value, icon, danger = false }: { label: string; value: string; icon?: React.ReactNode; danger?: boolean }) {
   return (
     <div className="min-w-0 bg-[#0D160B] p-4 sm:p-5">
-      <p className="m-0 flex items-center gap-2 text-xs leading-5 text-white/40">{icon}{label}</p>
+      <p className="m-0 flex items-center gap-2 text-xs leading-5 text-white/55">{icon}{label}</p>
       <p className={`mb-0 mt-3 text-2xl font-semibold tabular-nums sm:text-3xl ${danger ? "text-[#FF9698]" : "text-white"}`}>{value}</p>
     </div>
   );

@@ -20,7 +20,7 @@ export function TopBar({ onOpenNavigation }: TopBarProps) {
         <div className="flex items-center gap-2 text-sm text-white/60 sm:hidden"><Radio size={16} className="text-[#4BED86]" aria-hidden="true" />Testnets</div>
       </div>
       <div className="flex items-center gap-3">
-        <span className="hidden items-center gap-2 text-xs text-white/40 lg:flex"><span className="size-1.5 rounded-full bg-amber-300" />Mock protocol state</span>
+        <span className="hidden items-center gap-2 text-xs text-white/55 lg:flex"><span className="size-1.5 rounded-full bg-amber-300" />Mock protocol state</span>
         <button type="button" className="flex min-h-10 items-center gap-2 rounded-lg border border-white/15 bg-white/[0.035] px-3 text-sm font-medium text-white/75 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4BED86]" aria-label="Wallet connection is not available in Phase 1">
           <Wallet size={16} aria-hidden="true" />
           <span className="hidden sm:inline">Wallet not connected</span>
