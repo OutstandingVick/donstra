@@ -32,7 +32,7 @@ function ProofSequence() {
       <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#091007] shadow-[0_32px_90px_rgba(0,0,0,0.32)]">
         <div className="flex items-center justify-between border-b border-white/10 px-5 py-4 sm:px-6">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-[#D6E2D3]/60"><span className="size-1.5 rounded-full bg-[#16DB65]" />Decision record</div>
-          <span className="font-mono text-xs text-[#D6E2D3]/40">PRE-ACTION</span>
+          <span className="font-mono text-xs text-[#D6E2D3]/55">PRE-ACTION</span>
         </div>
         <ol className="m-0 list-none p-0">
           {proofStages.map((stage, stageIndex) => {
@@ -46,7 +46,7 @@ function ProofSequence() {
                   <span className="mt-1 block text-base font-semibold text-[#F3F8F1]">{stage.label}</span>
                   <span className="mt-1 block text-sm leading-6 text-[#D6E2D3]/55">{stage.detail}</span>
                 </span>
-                <span className="col-start-2 font-mono text-xs text-[#D6E2D3]/40 sm:col-start-auto">{stage.digest}</span>
+                <span className="col-start-2 font-mono text-xs text-[#D6E2D3]/55 sm:col-start-auto">{stage.digest}</span>
               </li>
             );
           })}

@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import "./dashboard.css";
-import "./release-status.css";
 
 export const metadata: Metadata = {
-  title: "Donstra — Proof Before Action",
-  description: "Cryptographic testimony integrity and GenLayer adjudication for autonomous agents.",
+  title: "Donstra — Accountability Before Action",
+  description: "Accountability infrastructure that proves what autonomous agents committed before they acted.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
