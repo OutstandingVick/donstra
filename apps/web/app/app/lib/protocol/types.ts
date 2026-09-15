@@ -30,7 +30,7 @@ export type ReceiptRecord = {
   challenger: Address | null;
   testimonyDigest: Hex;
   actionDigest: Hex;
-  evidenceDigest: Hex;
+  evidenceDigest: Hex | null;
   actionTransactionId: Hex | null;
   committedAt: string;
   executedAt: string | null;
@@ -98,5 +98,9 @@ export interface ProtocolAdapter {
   getReceipt(id: string): Promise<ReceiptRecord | null>;
   listAgents(): Promise<AgentRecord[]>;
   listDeployments(): Promise<DeploymentRecord[]>;
-  runLifecycleAction(action: LifecycleAction, receipt: ReceiptRecord): Promise<{ transactionHash: Hex }>;
+  runLifecycleAction(
+    action: LifecycleAction,
+    receipt: ReceiptRecord,
+    onSubmitted?: (transactionHash: Hex) => void,
+  ): Promise<{ transactionHash: Hex }>;
 }

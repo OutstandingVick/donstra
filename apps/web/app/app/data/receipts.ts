@@ -59,6 +59,18 @@ function receipt(input: Partial<ReceiptRecord> & Pick<ReceiptRecord, "id" | "sce
 
 export const demoReceipts: ReceiptRecord[] = [
   receipt({
+    id: "demo-reasonable-prepared",
+    scenario: "reasonable",
+    status: "committed",
+    verdict: "pending",
+    executedAt: null,
+    challengedAt: null,
+    adjudicationReason: "The testimony is sealed and committed. Exact execution parameters remain in the agent’s private workflow.",
+    nextAction: null,
+    nextActionReason: "Execution requires the authenticated agent and exact committed target, value, calldata, and deadline.",
+    metadata: { lifecycle: "Awaiting exact execution", mandate: "Treasury Allocation Policy v3.2" },
+  }),
+  receipt({
     id: "demo-reasonable-001",
     scenario: "reasonable",
     status: "resolved",
@@ -104,8 +116,8 @@ export const demoReceipts: ReceiptRecord[] = [
     reporters: [{ address: null, verified: true }, { address: null, verified: true }, { address: null, verified: false }],
     binding: { ...bindings, testimony: false },
     adjudicationReason: "The revealed testimony digest did not match the pre-execution commitment. No model judgment was required.",
-    nextAction: "finalize",
-    nextActionReason: "A live reporter operator can relay the deterministic fabricated verdict. Demo mode cannot submit it.",
+    nextAction: null,
+    nextActionReason: "Settlement is awaiting an authenticated reporter quorum; it is not a wallet action from this console.",
     metadata: { authenticity: "Digest mismatch", detection: "Deterministic", modelInvoked: false },
   }),
   receipt({

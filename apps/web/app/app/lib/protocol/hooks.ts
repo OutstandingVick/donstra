@@ -21,7 +21,17 @@ function useAdapterData<T>(initial: T, loader: () => Promise<T>): LoadState<T> {
       setLoading(false);
     }
   }, [loader]);
-  useEffect(() => { void refresh(); }, [refresh]);
+  useEffect(() => {
+    let active = true;
+    void loader().then((value) => {
+      if (active) { setData(value); setError(null); }
+    }).catch((cause: unknown) => {
+      if (active) setError(cause instanceof Error ? cause.message : "Unable to load protocol data.");
+    }).finally(() => {
+      if (active) setLoading(false);
+    });
+    return () => { active = false; };
+  }, [loader]);
   return { data, loading, error, refresh };
 }
 
@@ -60,9 +70,11 @@ export function useProtocolAction(onSuccess: () => Promise<void>) {
     setMessage("Confirm the transaction in your wallet.");
     setTransactionHash(null);
     try {
-      setPhase("pending");
-      setMessage("Transaction submitted. Waiting for confirmation.");
-      const result = await adapter.runLifecycleAction(action, receipt);
+      const result = await adapter.runLifecycleAction(action, receipt, (hash) => {
+        setTransactionHash(hash);
+        setPhase("pending");
+        setMessage("Transaction submitted. Waiting for confirmation.");
+      });
       setTransactionHash(result.transactionHash);
       setPhase("success");
       setMessage("Transaction confirmed.");

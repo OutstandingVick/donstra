@@ -32,6 +32,10 @@ function ReceiptDetail() {
         <DataField label="Challenger" value={receipt.challenger} mono />
         <DataField label="Status" value={receipt.status} />
         <DataField label="Source" value={receipt.source === "live" ? "Live registry" : "Demo dataset"} />
+        <DataField label="Committed" value={receipt.committedAt} mono />
+        <DataField label="Executed" value={receipt.executedAt} mono />
+        <DataField label="Challenged" value={receipt.challengedAt} mono />
+        <DataField label="Resolved" value={receipt.resolvedAt} mono />
       </dl>
     </section>
 
@@ -39,7 +43,7 @@ function ReceiptDetail() {
       <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0A1109]">
         <div className="border-b border-white/10 px-5 py-4"><h2 className="m-0 text-base font-semibold text-white">Cryptographic bindings</h2></div>
         <dl className="m-0 divide-y divide-white/[0.07] px-5">
-          {[["Testimony digest", receipt.testimonyDigest], ["Action digest", receipt.actionDigest], ["Evidence digest", receipt.evidenceDigest], ["Action transaction ID", receipt.actionTransactionId]] .map(([label, value]) => <DataField key={label} label={label as string} mono><div className="flex items-start gap-2"><span className="min-w-0 flex-1 break-all">{value ?? "Not available"}</span>{value && <CopyValue value={value} label={`Copy ${label}`} />}</div></DataField>)}
+          {[["Testimony digest", receipt.testimonyDigest], ["Action digest", receipt.actionDigest], ["Evidence digest", receipt.evidenceDigest], ["Action transaction ID", receipt.actionTransactionId]].map(([label, value]) => <DataField key={label} label={label as string} mono><div className="flex items-start gap-2"><span className="min-w-0 flex-1 break-all">{value ?? "Not available"}</span>{value && <CopyValue value={value} label={`Copy ${label}`} />}</div></DataField>)}
         </dl>
       </div>
       <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0A1109]">
@@ -56,8 +60,10 @@ function ReceiptDetail() {
 
     <section className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-[#0A1109]" aria-labelledby="transactions-heading">
       <div className="border-b border-white/10 px-5 py-4"><h2 id="transactions-heading" className="m-0 text-base font-semibold text-white">Protocol transactions</h2></div>
-      <ul className="m-0 list-none divide-y divide-white/[0.07] p-0">{receipt.transactions.map((transaction) => <li key={transaction.label} className="grid gap-3 px-5 py-4 md:grid-cols-[0.8fr_0.8fr_1.4fr_auto] md:items-center"><span className="text-sm font-semibold text-white/80">{transaction.label}</span><span className="text-xs text-white/50">{transaction.network}</span><span className="break-all font-mono text-xs text-white/60">{transaction.hash ?? "Not available in demo mode"}</span>{transaction.explorerUrl ? <a href={transaction.explorerUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 text-xs font-semibold text-[#80F4A9]">Open explorer<ExternalLink size={13} aria-hidden="true" /></a> : <span className="text-xs text-white/40">No explorer record</span>}</li>)}</ul>
+      <ul className="m-0 list-none divide-y divide-white/[0.07] p-0">{receipt.transactions.map((transaction) => <li key={transaction.label} className="grid gap-3 px-5 py-4 md:grid-cols-[0.7fr_0.7fr_1fr_1.4fr_auto] md:items-center"><span className="text-sm font-semibold text-white/80">{transaction.label}</span><span className="text-xs text-white/50">{transaction.network}</span><span className="font-mono text-xs text-white/50">{transaction.timestamp ?? "No chain timestamp"}</span><span className="break-all font-mono text-xs text-white/60">{transaction.hash ?? "Not available in demo mode"}</span>{transaction.explorerUrl ? <a href={transaction.explorerUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-10 items-center gap-2 text-xs font-semibold text-[#80F4A9]">Open explorer<ExternalLink size={13} aria-hidden="true" /></a> : <span className="text-xs text-white/50">No explorer record</span>}</li>)}</ul>
     </section>
+
+    <section className="mt-6 overflow-hidden rounded-xl border border-white/10 bg-[#0A1109]" aria-labelledby="reporters-heading"><div className="border-b border-white/10 px-5 py-4"><h2 id="reporters-heading" className="m-0 text-base font-semibold text-white">Reporter quorum</h2></div><ul className="m-0 list-none divide-y divide-white/[0.07] p-0">{receipt.reporters.length ? receipt.reporters.map((reporter, index) => <li key={index} className="flex min-h-14 items-center justify-between gap-4 px-5 py-3"><span className="break-all font-mono text-xs text-white/60">{reporter.address ?? `Reporter ${index + 1} address not configured`}</span><StatusBadge label={reporter.verified ? "Verified" : "Not verified"} tone={reporter.verified ? "good" : "neutral"} /></li>) : <li className="px-5 py-4 text-sm text-white/60">Reporter addresses are unavailable from the configured public data source.</li>}</ul></section>
 
     <section className="mt-6 rounded-xl border border-white/10 bg-[#0A1109] p-5 sm:p-6" aria-labelledby="adjudication-heading"><div className="flex items-start gap-3"><Link2 size={18} className="mt-0.5 shrink-0 text-[#4BED86]" aria-hidden="true" /><div><h2 id="adjudication-heading" className="m-0 text-base font-semibold text-white">Adjudication result</h2><p className="mb-0 mt-2 max-w-3xl text-pretty text-sm leading-6 text-white/65">{receipt.adjudicationReason}</p></div></div></section>
   </article>;

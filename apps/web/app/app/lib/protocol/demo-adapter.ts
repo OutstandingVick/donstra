@@ -2,7 +2,7 @@ import { deploymentRecords } from "../../data/deployments";
 import { demoReceipts } from "../../data/receipts";
 import { protocolConfig } from "./config";
 import { readDemoRuns } from "./demo-session";
-import type { AgentRecord, LifecycleAction, ProtocolAdapter, ReceiptRecord } from "./types";
+import type { AgentRecord, ProtocolAdapter } from "./types";
 
 function demoAgents(): AgentRecord[] {
   const receipts = demoReceipts;
@@ -44,7 +44,7 @@ export class DemoProtocolAdapter implements ProtocolAdapter {
     return deploymentRecords;
   }
 
-  async runLifecycleAction(_action: LifecycleAction, _receipt: ReceiptRecord): Promise<never> {
+  async runLifecycleAction(): Promise<never> {
     throw new Error("Blockchain actions are unavailable in demo mode. Configure the verified public deployment values first.");
   }
 }

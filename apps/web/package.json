@@ -7,6 +7,7 @@
     "build": "next build",
     "lint": "eslint app/app",
     "start": "next start",
+    "test": "tsx --test app/app/lib/protocol/*.test.ts",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {

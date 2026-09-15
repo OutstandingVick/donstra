@@ -5,7 +5,6 @@ import {
   defineChain,
   getAddress,
   http,
-  type Address as ViemAddress,
   type Hex as ViemHex,
 } from "viem";
 import { deploymentRecords } from "../../data/deployments";
@@ -68,7 +67,7 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
         challenger: item[10] === zeroAddress ? null : item[10],
         testimonyDigest: item[1],
         actionDigest: item[2],
-        evidenceDigest: "0x0000000000000000000000000000000000000000000000000000000000000000",
+        evidenceDigest: null,
         actionTransactionId: item[3] === `0x${"0".repeat(64)}` ? null : item[3],
         committedAt: new Date(Number(item[4]) * 1000).toISOString(),
         executedAt: item[6] ? new Date(Number(item[6]) * 1000).toISOString() : null,
@@ -124,7 +123,11 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
 
   async listDeployments() { return deploymentRecords; }
 
-  async runLifecycleAction(action: LifecycleAction, receipt: ReceiptRecord) {
+  async runLifecycleAction(
+    action: LifecycleAction,
+    receipt: ReceiptRecord,
+    onSubmitted?: (transactionHash: ViemHex) => void,
+  ) {
     if (!window.ethereum) throw new Error("Install an EIP-1193 wallet to submit this transaction.");
     if (!protocolConfig.registryAddress) throw new Error("The verified registry address is not configured.");
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" }) as string[];
@@ -145,6 +148,7 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
     } else {
       throw new Error(`${action} requires sealed testimony or exact action parameters that are not available from this receipt view.`);
     }
+    onSubmitted?.(transactionHash);
     await this.client.waitForTransactionReceipt({ hash: transactionHash });
     return { transactionHash };
   }

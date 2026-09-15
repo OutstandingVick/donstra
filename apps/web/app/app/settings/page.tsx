@@ -13,7 +13,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const provider = window.ethereum;
-    setWalletDetected(Boolean(provider));
+    queueMicrotask(() => setWalletDetected(Boolean(provider)));
     if (provider) void provider.request({ method: "eth_accounts" }).then((accounts) => setWalletAddress((accounts as string[])[0] ?? null)).catch(() => setWalletAddress(null));
   }, []);
 

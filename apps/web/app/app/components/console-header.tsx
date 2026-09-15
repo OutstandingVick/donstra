@@ -15,7 +15,7 @@ export function ConsoleHeader({ selected, running, onSelect, onRun }: ConsoleHea
         <div className="max-w-3xl">
           <div className="mb-3 flex items-center gap-2 text-sm font-medium text-[#4BED86]"><ShieldAlert size={17} aria-hidden="true" />Guided investigation</div>
           <h1 id="console-title" className="m-0 text-balance text-3xl font-semibold tracking-[-0.035em] text-white sm:text-4xl">Live Console</h1>
-          <p className="mb-0 mt-3 max-w-2xl text-pretty text-base leading-7 text-white/55">Follow one agent decision from sealed testimony to economic settlement. Every proof shown here is demo data in Phase 1.</p>
+          <p className="mb-0 mt-3 max-w-2xl text-pretty text-base leading-7 text-white/55">Follow one agent decision from sealed testimony to economic settlement. Until verified deployments are configured, every proof is clearly presented as demo data.</p>
         </div>
         <button type="button" onClick={onRun} disabled={running} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#16DB65] px-5 text-sm font-semibold text-[#071006] transition-transform duration-150 active:[transform:scale(0.96)] disabled:cursor-wait disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:w-auto">
           <Play size={17} fill="currentColor" aria-hidden="true" />
