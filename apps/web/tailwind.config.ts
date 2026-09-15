@@ -2,8 +2,7 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: ["./app/**/*.{js,ts,jsx,tsx,mdx}"],
-  important: "#donstra-app",
-  corePlugins: { preflight: false },
+  important: true,
   theme: {
     extend: {
       colors: {

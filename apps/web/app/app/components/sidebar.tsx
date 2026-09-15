@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { ShieldCheck, X } from "lucide-react";
+import { X } from "lucide-react";
 import { navigationItems } from "./navigation";
 
 type SidebarProps = { open: boolean; onClose: () => void };
@@ -15,9 +16,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {open && <button type="button" className="fixed inset-0 z-40 bg-black/70 md:hidden" aria-label="Close navigation" onClick={onClose} />}
       <aside className={`${open ? "[transform:translateX(0)]" : "[transform:translateX(-100%)]"} fixed inset-y-0 start-0 z-50 flex w-[17rem] flex-col border-e border-white/10 bg-[#0A1109] text-[#E8EDE6] transition-transform duration-150 md:[transform:translateX(0)]`}>
         <div className="flex min-h-16 items-center justify-between border-b border-white/10 px-5">
-          <Link href="/app" className="flex min-h-11 items-center gap-3" onClick={onClose}>
-            <span className="grid size-8 place-items-center rounded-lg border border-[#16DB65]/30 bg-[#16DB65]/10 text-[#4BED86]"><ShieldCheck size={18} strokeWidth={2} aria-hidden="true" /></span>
-            <span className="text-[15px] font-semibold tracking-[0.18em]">DONSTRA</span>
+          <Link href="/app" className="flex min-h-11 items-center" onClick={onClose} aria-label="Donstra Live Console">
+            <Image src="/donstra-logo.svg" alt="Donstra" width={128} height={32} priority className="h-8 w-auto" />
           </Link>
           <button type="button" className="grid size-11 place-items-center rounded-lg text-white/70 hover:bg-white/5 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4BED86] md:hidden" aria-label="Close navigation" onClick={onClose}>
             <X size={20} aria-hidden="true" />
