@@ -11,7 +11,7 @@ const productLinks = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-t border-white/10 bg-[#080D07] px-5 py-12 text-[#F3F8F1] sm:px-8 sm:py-16 lg:px-12" aria-label="Donstra footer">
+    <footer className="!block border-t border-white/10 bg-[#080D07] px-5 py-12 text-[#F3F8F1] sm:px-8 sm:py-16 lg:px-12" aria-label="Donstra footer">
       <div className="mx-auto grid w-full max-w-[90rem] gap-12 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-start md:gap-16">
         <div className="max-w-md">
           <Link href="/" className="inline-flex min-h-11 items-center rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#16DB65]" aria-label="Donstra home">
@@ -20,7 +20,7 @@ export function SiteFooter() {
           <p className="mb-0 mt-5 max-w-[36rem] text-pretty text-sm leading-6 text-[#D6E2D3]/70">Accountability infrastructure that binds an autonomous agent’s testimony to its action before the outcome is known.</p>
         </div>
 
-        <nav aria-label="Product links">
+        <nav aria-label="Product links" className="!static !block !h-auto !border-0 !bg-transparent !p-0 !backdrop-blur-none">
           <p className="m-0 text-xs font-semibold uppercase tracking-[0.14em] text-[#B7C5B3]/65">Product</p>
           <ul className="mb-0 mt-4 grid list-none gap-1 p-0">
             {productLinks.map((link) => (
@@ -33,7 +33,7 @@ export function SiteFooter() {
           </ul>
         </nav>
 
-        <nav aria-label="Deployment links">
+        <nav aria-label="Deployment links" className="!static !block !h-auto !border-0 !bg-transparent !p-0 !backdrop-blur-none">
           <p className="m-0 text-xs font-semibold uppercase tracking-[0.14em] text-[#B7C5B3]/65">Networks</p>
           <ul className="mb-0 mt-4 grid list-none gap-1 p-0">
             {deploymentLinks.map((link) => (
