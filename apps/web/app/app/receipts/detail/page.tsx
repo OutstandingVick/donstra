@@ -7,6 +7,7 @@ import { ArrowLeft, ExternalLink, Link2 } from "lucide-react";
 import { formatEther } from "viem";
 import { CopyValue } from "../../components/copy-value";
 import { DataField, DemoBanner, LoadNotice, PageHeader, StatusBadge } from "../../components/forensic-ui";
+import { ReceiptActions } from "../../components/receipt-actions";
 import { useProtocolReceipt } from "../../lib/protocol/hooks";
 
 export default function ReceiptDetailPage() {
@@ -21,7 +22,7 @@ function ReceiptDetail() {
 
   return <article className="mx-auto w-full max-w-[100rem]">
     <Link href="/app/receipts" className="mb-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-white/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4BED86]"><ArrowLeft size={16} aria-hidden="true" />All receipts</Link>
-    <PageHeader eyebrow="Forensic record" title="Receipt detail" description="A permanent, machine-readable chain from prior testimony to economic outcome." action={<StatusBadge label={receipt.verdict} tone={tone} />} />
+    <PageHeader eyebrow="Forensic record" title="Receipt detail" description="A permanent, machine-readable chain from prior testimony to economic outcome." action={<div className="grid justify-items-start gap-3 sm:justify-items-end"><StatusBadge label={receipt.verdict} tone={tone} /><ReceiptActions receipt={receipt} /></div>} />
     <DemoBanner live={config.mode === "live"} />
 
     <section className="mt-8 overflow-hidden rounded-xl border border-white/10 bg-[#0A1109]" aria-labelledby="identity-heading">
