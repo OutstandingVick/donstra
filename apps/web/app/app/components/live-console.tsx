@@ -7,11 +7,14 @@ import { DecisionInspector } from "./decision-inspector";
 import { ProtocolTimeline } from "./protocol-timeline";
 import { ScenarioSummary } from "./scenario-summary";
 import { scenarios, type ScenarioKey } from "../data/scenarios";
+import { recordDemoRun } from "../lib/protocol/demo-session";
+import { ScenarioOutcome } from "./scenario-outcome";
 
 export function LiveConsole() {
   const [selected, setSelected] = useState<ScenarioKey>("negligent");
   const [visibleSteps, setVisibleSteps] = useState(8);
   const [running, setRunning] = useState(false);
+  const [generatedReceiptId, setGeneratedReceiptId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const scenario = scenarios[selected];
 
@@ -22,12 +25,14 @@ export function LiveConsole() {
     setSelected(next);
     setVisibleSteps(8);
     setRunning(false);
+    setGeneratedReceiptId(null);
   }
 
   function runScenario() {
     if (timerRef.current) clearInterval(timerRef.current);
     setVisibleSteps(0);
     setRunning(true);
+    setGeneratedReceiptId(null);
     let step = 0;
     timerRef.current = setInterval(() => {
       step += 1;
@@ -36,6 +41,7 @@ export function LiveConsole() {
         if (timerRef.current) clearInterval(timerRef.current);
         timerRef.current = null;
         setRunning(false);
+        setGeneratedReceiptId(recordDemoRun(selected).id);
       }
     }, 450);
   }
@@ -47,6 +53,7 @@ export function LiveConsole() {
       <ScenarioSummary scenario={scenario} />
       <ComparisonTraces scenario={scenario} visibleSteps={visibleSteps} />
       <ProtocolTimeline stages={scenario.timeline} completedStages={Math.min(visibleSteps, 6)} />
+      {generatedReceiptId && <ScenarioOutcome scenario={scenario} receiptId={generatedReceiptId} />}
       <DecisionInspector scenario={scenario} />
     </div>
   );

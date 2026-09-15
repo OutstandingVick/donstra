@@ -1,6 +1,7 @@
 import { deploymentRecords } from "../../data/deployments";
 import { demoReceipts } from "../../data/receipts";
 import { protocolConfig } from "./config";
+import { readDemoRuns } from "./demo-session";
 import type { AgentRecord, LifecycleAction, ProtocolAdapter, ReceiptRecord } from "./types";
 
 function demoAgents(): AgentRecord[] {
@@ -28,11 +29,11 @@ export class DemoProtocolAdapter implements ProtocolAdapter {
   }
 
   async listReceipts() {
-    return demoReceipts;
+    return [...readDemoRuns(), ...demoReceipts];
   }
 
   async getReceipt(id: string) {
-    return demoReceipts.find((receipt) => receipt.id === id) ?? null;
+    return [...readDemoRuns(), ...demoReceipts].find((receipt) => receipt.id === id) ?? null;
   }
 
   async listAgents() {
