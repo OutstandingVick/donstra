@@ -53,7 +53,7 @@ export function DecisionInspector({ scenario }: { scenario: Scenario }) {
               <Status icon={<CheckCircle2 size={16} aria-hidden="true" />} label="Testimony bound" />
               <Status icon={<CheckCircle2 size={16} aria-hidden="true" />} label="Action bound" />
               <Status icon={<CheckCircle2 size={16} aria-hidden="true" />} label="Commitment time bound" />
-              <Status icon={<ShieldX size={16} aria-hidden="true" />} label="Mandate non-compliant" danger />
+              <Status icon={scenario.outcome.verdict === "Reasonable" ? <CheckCircle2 size={16} aria-hidden="true" /> : <ShieldX size={16} aria-hidden="true" />} label={scenario.outcome.verdict === "Reasonable" ? "Mandate compliant" : scenario.outcome.verdict === "Inconclusive" ? "Mandate unresolved" : "Mandate non-compliant"} danger={scenario.outcome.verdict !== "Reasonable"} />
             </ul>
           </aside>
         </div>

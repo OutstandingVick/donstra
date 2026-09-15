@@ -23,9 +23,9 @@ export function ProtocolTimeline({ stages, completedStages }: { stages: Timeline
                 <Data label="Timestamp" value={complete ? stage.timestamp : "—"} mono />
                 <Data label="Network" value={stage.network} />
                 <Data label="Duration" value={complete ? stage.duration : "—"} mono />
-                <Data label="Transaction" value={complete ? stage.transactionHash : "Awaiting run"} mono />
+                <Data label="Transaction" value={complete ? stage.transactionHash ?? "Not available in demo mode" : "Awaiting run"} mono />
               </dl>
-              <button type="button" disabled={!complete} className="mt-5 flex min-h-10 items-center gap-2 rounded-md border border-white/10 px-3 text-xs font-semibold text-white/55 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4BED86]" aria-label={`Open ${stage.label} transaction in explorer`}>
+              <button type="button" disabled={!complete || !stage.explorerUrl} className="mt-5 flex min-h-10 items-center gap-2 rounded-md border border-white/10 px-3 text-xs font-semibold text-white/55 disabled:cursor-not-allowed disabled:opacity-30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4BED86]" aria-label={`Open ${stage.label} transaction in explorer`}>
                 Open explorer <ExternalLink size={13} aria-hidden="true" />
               </button>
             </li>

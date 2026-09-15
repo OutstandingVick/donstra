@@ -5,9 +5,9 @@ export type TimelineStage = {
   state: "verified" | "complete" | "active" | "pending";
   timestamp: string;
   network: string;
-  transactionHash: string;
+  transactionHash: string | null;
   duration: string;
-  explorerUrl: string;
+  explorerUrl: string | null;
 };
 
 export type InspectorPane = {
@@ -27,9 +27,20 @@ export type Scenario = {
   proposedExposure: number;
   result: string;
   withoutDonstra: Array<{ title: string; detail: string; state: "complete" | "unverifiable" }>;
-  withDonstra: Array<{ title: string; detail: string; proof?: string }>;
+  withDonstra: Array<{ title: string; detail: string; proof?: string | null }>;
   timeline: TimelineStage[];
   inspector: Record<"Evidence" | "Belief" | "Mandate" | "Proposed Action" | "Executed Action", InspectorPane>;
+  outcome: {
+    verdict: "Reasonable" | "Negligent" | "Fabricated" | "Inconclusive";
+    reason: string;
+    authenticity: string;
+    actionBinding: string;
+    futureKnowledge: string;
+    consensus: string;
+    quorum: string;
+    bondOutcome: string;
+    receiptId: string;
+  };
 };
 
 const hashes = {
@@ -58,19 +69,19 @@ const negligent: Scenario = {
     { title: "Testimony sealed", detail: "Evidence, belief, confidence, mandate, and action were sealed before execution.", proof: hashes.receipt },
     { title: "Evidence digest", detail: "The observed market brief is content-addressed and time-bound.", proof: hashes.evidence },
     { title: "Action digest", detail: "The target, calldata, value, chain, and deadline are bound.", proof: hashes.action },
-    { title: "Commitment", detail: "The testimony digest and agent bond were committed on Sepolia.", proof: "0xd19f…914c" },
-    { title: "Exact execution", detail: "The registry executed the exact action in the commitment.", proof: "0x78d2…a611" },
-    { title: "Challenge", detail: "A challenger posted collateral during the challenge window.", proof: "0x15ab…09dd" },
-    { title: "Adjudication", detail: "GenLayer validators identified the mandate violation.", proof: "GL-0x12fc…48a0" },
-    { title: "Settlement", detail: "A 2-of-3 reporter quorum awarded both bonds to the challenger.", proof: "0x44e0…c29b" },
+    { title: "Commitment", detail: "The testimony digest and agent bond are ready for Sepolia commitment.", proof: null },
+    { title: "Exact execution", detail: "The registry will execute only the exact action in the commitment.", proof: null },
+    { title: "Challenge", detail: "A challenger can post collateral during the challenge window.", proof: null },
+    { title: "Adjudication", detail: "The demo verdict identifies the mandate violation; no live GenLayer transaction exists yet.", proof: null },
+    { title: "Settlement", detail: "The represented 2-of-3 outcome awards both bonds to the challenger.", proof: null },
   ],
   timeline: [
-    { label: "Testimony", state: "verified", timestamp: "2026-09-15T13:42:08Z", network: "Local seal", transactionHash: hashes.receipt, duration: "184 ms", explorerUrl: "#" },
-    { label: "Committed", state: "complete", timestamp: "2026-09-15T13:42:21Z", network: "Sepolia", transactionHash: "0xd19f5b7a…914c", duration: "13.2 s", explorerUrl: "#" },
-    { label: "Executed", state: "complete", timestamp: "2026-09-15T13:42:39Z", network: "Sepolia", transactionHash: "0x78d293c4…a611", duration: "18.0 s", explorerUrl: "#" },
-    { label: "Challenged", state: "complete", timestamp: "2026-09-15T13:43:02Z", network: "Sepolia", transactionHash: "0x15ab2f09…09dd", duration: "23.1 s", explorerUrl: "#" },
-    { label: "Adjudicated", state: "complete", timestamp: "2026-09-15T13:43:51Z", network: "Studionet", transactionHash: "GL-0x12fc…48a0", duration: "49.3 s", explorerUrl: "#" },
-    { label: "Settled", state: "complete", timestamp: "2026-09-15T13:44:07Z", network: "Sepolia", transactionHash: "0x44e06b81…c29b", duration: "16.1 s", explorerUrl: "#" },
+    { label: "Testimony", state: "verified", timestamp: "2026-09-15T13:42:08Z", network: "Local seal", transactionHash: null, duration: "184 ms", explorerUrl: null },
+    { label: "Committed", state: "complete", timestamp: "2026-09-15T13:42:21Z", network: "Sepolia", transactionHash: null, duration: "13.2 s", explorerUrl: null },
+    { label: "Executed", state: "complete", timestamp: "2026-09-15T13:42:39Z", network: "Sepolia", transactionHash: null, duration: "18.0 s", explorerUrl: null },
+    { label: "Challenged", state: "complete", timestamp: "2026-09-15T13:43:02Z", network: "Sepolia", transactionHash: null, duration: "23.1 s", explorerUrl: null },
+    { label: "Adjudicated", state: "complete", timestamp: "2026-09-15T13:43:51Z", network: "Studionet", transactionHash: null, duration: "49.3 s", explorerUrl: null },
+    { label: "Settled", state: "complete", timestamp: "2026-09-15T13:44:07Z", network: "Sepolia", transactionHash: null, duration: "16.1 s", explorerUrl: null },
   ],
   inspector: {
     Evidence: {
@@ -109,10 +120,10 @@ const negligent: Scenario = {
         { label: "Action", value: "Swap USDC for ETH" },
         { label: "Input", value: "960,000 USDC" },
         { label: "Treasury exposure", value: "40%", emphasis: "danger" },
-        { label: "Target", value: "0x111111125421cA6dc452d289314280a0f8842A65" },
+        { label: "Target", value: "Not available in demo mode" },
         { label: "Action digest", value: hashes.action, emphasis: "verified" },
       ],
-      raw: JSON.stringify({ kind: "swap", chainId: 11155111, target: "0x111111125421cA6dc452d289314280a0f8842A65", value: "0", parameters: { assetIn: "USDC", assetOut: "ETH", amount: "960000000000" }, calldataDigest: hashes.action }, null, 2),
+      raw: JSON.stringify({ kind: "swap", chainId: 11155111, target: null, value: "0", parameters: { assetIn: "USDC", assetOut: "ETH", amount: "960000000000" }, calldataDigest: hashes.action, mode: "demo" }, null, 2),
     },
     "Executed Action": {
       summary: "The registry executed the same target, value, and calldata that the agent committed.",
@@ -120,15 +131,26 @@ const negligent: Scenario = {
         { label: "Binding", value: "Exact match", emphasis: "verified" },
         { label: "Executed amount", value: "960,000 USDC" },
         { label: "Executed exposure", value: "40%", emphasis: "danger" },
-        { label: "Transaction", value: "0x78d293c49ffab88fd154a391e980846a1af7e6022f853825b736965826a6a611" },
+        { label: "Transaction", value: "Not available in demo mode" },
       ],
-      raw: JSON.stringify({ actionMatched: true, executedAt: 1789489359, transactionHash: "0x78d293c49ffab88fd154a391e980846a1af7e6022f853825b736965826a6a611" }, null, 2),
+      raw: JSON.stringify({ actionMatched: true, executedAt: 1789489359, transactionHash: null, mode: "demo" }, null, 2),
     },
+  },
+  outcome: {
+    verdict: "Negligent",
+    reason: "The genuine testimony proposed 40% exposure under a mandate capped at 15%.",
+    authenticity: "Testimony digest matched",
+    actionBinding: "Exact action matched",
+    futureKnowledge: "No future knowledge detected",
+    consensus: "Demo adjudication complete",
+    quorum: "2 of 3 represented",
+    bondOutcome: "Agent and challenge bonds awarded to challenger",
+    receiptId: "demo-negligent-002",
   },
 };
 
 function scenarioVariant(key: ScenarioKey, label: string, result: string, proposedExposure: number): Scenario {
-  return {
+  const variant: Scenario = {
     ...negligent,
     key,
     label,
@@ -138,6 +160,17 @@ function scenarioVariant(key: ScenarioKey, label: string, result: string, propos
     proposedExposure,
     result,
   };
+  if (key === "reasonable") {
+    variant.outcome = { verdict: "Reasonable", reason: "The proposed 10% allocation remained within the signed 15% limit.", authenticity: "Testimony digest matched", actionBinding: "Exact action matched", futureKnowledge: "No future knowledge detected", consensus: "Demo adjudication complete", quorum: "2 of 3 represented", bondOutcome: "Agent recovers agent and challenge bonds", receiptId: "demo-reasonable-001" };
+    variant.withDonstra = variant.withDonstra.map((step) => step.title === "Adjudication" ? { ...step, detail: "The represented validator outcome finds the action mandate-compliant." } : step.title === "Settlement" ? { ...step, detail: "The represented settlement returns both bonds to the agent." } : step);
+  } else if (key === "fabricated") {
+    variant.outcome = { verdict: "Fabricated", reason: "The revealed testimony bytes do not reproduce the committed digest.", authenticity: "Digest mismatch detected", actionBinding: "Exact action matched", futureKnowledge: "Not evaluated", consensus: "Deterministic result", quorum: "2 of 3 represented", bondOutcome: "Agent and challenge bonds awarded to challenger", receiptId: "demo-fabricated-001" };
+    variant.withDonstra = variant.withDonstra.map((step) => step.title === "Adjudication" ? { ...step, detail: "Digest mismatch proves fabrication before any model judgment." } : step);
+  } else if (key === "timeout") {
+    variant.outcome = { verdict: "Inconclusive", reason: "No settlement arrived before the adjudication deadline.", authenticity: "Testimony digest matched", actionBinding: "Exact action matched", futureKnowledge: "Not evaluated", consensus: "Deadline elapsed", quorum: "No quorum reached", bondOutcome: "Each party recovers its own bond", receiptId: "demo-timeout-001" };
+    variant.withDonstra = variant.withDonstra.map((step) => step.title === "Adjudication" ? { ...step, detail: "No final adjudication arrived before the deadline." } : step.title === "Settlement" ? { ...step, detail: "The timeout path returns each party’s own bond." } : step);
+  }
+  return variant;
 }
 
 export const scenarios: Record<ScenarioKey, Scenario> = {
