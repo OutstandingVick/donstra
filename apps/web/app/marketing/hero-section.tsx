@@ -73,7 +73,7 @@ export function HeroSection() {
           <p className="mb-0 mt-6 max-w-[40rem] border-s-2 border-[#16DB65]/60 ps-5 text-base leading-7 text-[#EAF2E7]/85">An agent can change its explanation. It cannot change what Donstra proves it committed before acting.</p>
           <div className="mt-10 flex flex-wrap items-center gap-3">
             <Link href="/app" className="inline-flex min-h-12 items-center gap-2 rounded-md bg-[#16DB65] px-5 text-sm font-semibold text-[#071006] transition-colors duration-150 hover:bg-[#43E47E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#F3F8F1]">Open Live Console <ArrowRight size={17} strokeWidth={2} aria-hidden="true" /></Link>
-            <a href="#problem" className="inline-flex min-h-12 items-center gap-2 rounded-md border border-white/15 px-5 text-sm font-semibold text-[#F3F8F1] transition-colors duration-150 hover:border-white/30 hover:bg-white/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#16DB65]">View how it works <ArrowDown size={17} strokeWidth={2} aria-hidden="true" /></a>
+            <a href="#how-donstra-works" className="inline-flex min-h-12 items-center gap-2 rounded-md border border-white/15 px-5 text-sm font-semibold text-[#F3F8F1] transition-colors duration-150 hover:border-white/30 hover:bg-white/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#16DB65]">View how it works <ArrowDown size={17} strokeWidth={2} aria-hidden="true" /></a>
           </div>
         </div>
         <ProofSequence />

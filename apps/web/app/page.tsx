@@ -1,4 +1,6 @@
 import { HeroSection } from "./marketing/hero-section";
+import { ExistingSystemsSection } from "./marketing/existing-systems-section";
+import { HowDonstraWorksSection } from "./marketing/how-donstra-works-section";
 import { MarketingHeader } from "./marketing/marketing-header";
 import { ProblemSection } from "./marketing/problem-section";
 
@@ -10,6 +12,8 @@ export default function Home() {
       <main id="main-content">
         <HeroSection />
         <ProblemSection />
+        <ExistingSystemsSection />
+        <HowDonstraWorksSection />
       </main>
     </div>
   );
