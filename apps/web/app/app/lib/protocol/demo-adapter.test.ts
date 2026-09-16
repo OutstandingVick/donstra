@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { queueForReceipt } from "../../data/receipts";
+import { scenarios } from "../../data/scenarios";
 import { DemoProtocolAdapter } from "./demo-adapter";
 import type { ProtocolAdapter } from "./types";
 
@@ -23,4 +24,13 @@ test("demo deployment keeps Sepolia addresses unavailable", async () => {
   const sepolia = deployments.find(({ key }) => key === "sepolia");
   assert.equal(sepolia?.address, null);
   assert.equal(sepolia?.deploymentTransaction, null);
+});
+
+test("reasonable inspector agrees with its scenario and receipt", () => {
+  const scenario = scenarios.reasonable;
+  assert.equal(scenario.confidence, 68);
+  assert.equal(scenario.proposedExposure, 10);
+  assert.match(scenario.inspector.Mandate.summary, /compliant/i);
+  assert.equal(scenario.inspector.Mandate.fields.find(({ label }) => label === "Proposed exposure")?.value, "10%");
+  assert.equal(scenario.inspector["Executed Action"].fields.find(({ label }) => label === "Executed exposure")?.value, "10%");
 });
