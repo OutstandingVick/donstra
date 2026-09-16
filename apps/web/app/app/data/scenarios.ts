@@ -157,11 +157,36 @@ function scenarioVariant(key: ScenarioKey, label: string, result: string, propos
     eyebrow: key === "reasonable" ? "Mandate compliant" : key === "fabricated" ? "Digest mismatch" : "Adjudication expired",
     title: key === "reasonable" ? "Treasury allocation remains within mandate" : key === "fabricated" ? "Revealed testimony differs from the commitment" : "Challenge reached its adjudication deadline",
     description: key === "reasonable" ? "The proposed allocation remains within the signed treasury mandate." : key === "fabricated" ? "The disclosed testimony bytes do not produce the digest committed before execution." : "No settlement arrived before the deadline, so each party can recover its own bond.",
+    confidence: key === "reasonable" ? 68 : negligent.confidence,
     proposedExposure,
     result,
   };
   if (key === "reasonable") {
     variant.outcome = { verdict: "Reasonable", reason: "The proposed 10% allocation remained within the signed 15% limit.", authenticity: "Testimony digest matched", actionBinding: "Exact action matched", futureKnowledge: "No future knowledge detected", consensus: "Demo adjudication complete", quorum: "2 of 3 represented", bondOutcome: "Agent recovers agent and challenge bonds", receiptId: "demo-reasonable-001" };
+    variant.inspector = {
+      ...negligent.inspector,
+      Belief: {
+        ...negligent.inspector.Belief,
+        fields: negligent.inspector.Belief.fields.map((field) => field.label === "Confidence" ? { ...field, value: "68%" } : field),
+        raw: JSON.stringify({ belief: "ETH momentum supports increasing treasury exposure for the next 24 hours.", confidenceBps: 6800 }, null, 2),
+      },
+      Mandate: {
+        ...negligent.inspector.Mandate,
+        summary: "The versioned mandate caps exposure at 15%. The proposed 10% allocation is compliant.",
+        fields: negligent.inspector.Mandate.fields.map((field) => field.label === "Proposed exposure" ? { ...field, value: "10%", emphasis: "verified" } : field.label === "Difference" ? { ...field, value: "5 percentage points below maximum", emphasis: "verified" } : field),
+      },
+      "Proposed Action": {
+        ...negligent.inspector["Proposed Action"],
+        summary: "Allocate 240,000 USDC—10% of treasury value—to ETH exposure.",
+        fields: negligent.inspector["Proposed Action"].fields.map((field) => field.label === "Input" ? { ...field, value: "240,000 USDC" } : field.label === "Treasury exposure" ? { ...field, value: "10%", emphasis: "verified" } : field),
+        raw: JSON.stringify({ kind: "swap", chainId: 11155111, target: null, value: "0", parameters: { assetIn: "USDC", assetOut: "ETH", amount: "240000000000" }, calldataDigest: hashes.action, mode: "demo" }, null, 2),
+      },
+      "Executed Action": {
+        ...negligent.inspector["Executed Action"],
+        fields: negligent.inspector["Executed Action"].fields.map((field) => field.label === "Executed amount" ? { ...field, value: "240,000 USDC" } : field.label === "Executed exposure" ? { ...field, value: "10%", emphasis: "verified" } : field),
+      },
+    };
+    variant.withoutDonstra = variant.withoutDonstra.map((step) => step.title === "Action executed" ? { ...step, detail: "10% treasury exposure was submitted." } : step);
     variant.withDonstra = variant.withDonstra.map((step) => step.title === "Adjudication" ? { ...step, detail: "The represented validator outcome finds the action mandate-compliant." } : step.title === "Settlement" ? { ...step, detail: "The represented settlement returns both bonds to the agent." } : step);
   } else if (key === "fabricated") {
     variant.outcome = { verdict: "Fabricated", reason: "The revealed testimony bytes do not reproduce the committed digest.", authenticity: "Digest mismatch detected", actionBinding: "Exact action matched", futureKnowledge: "Not evaluated", consensus: "Deterministic result", quorum: "2 of 3 represented", bondOutcome: "Agent and challenge bonds awarded to challenger", receiptId: "demo-fabricated-001" };
