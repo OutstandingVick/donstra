@@ -43,6 +43,11 @@ export function SiteFooter() {
           </ul>
         </nav>
       </div>
+      <div className="relative z-10 mx-auto mt-28 w-full max-w-[90rem] sm:mt-40 lg:mt-48">
+        <Link href="/" aria-label="Donstra home" className="block w-fit max-w-full text-[clamp(5.5rem,21vw,21rem)] font-semibold leading-[0.75] tracking-[-0.095em] text-[#F3F8F1] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#16DB65]">
+          donstra
+        </Link>
+      </div>
       <div className="mx-auto mt-12 flex w-full max-w-[90rem] flex-col gap-2 border-t border-white/10 pt-6 text-xs leading-5 text-[#B7C5B3]/60 sm:flex-row sm:items-center sm:justify-between">
         <span>Donstra — accountability before action.</span>
         <span>Public proof. No hidden cognition claimed.</span>
