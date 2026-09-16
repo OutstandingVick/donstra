@@ -1,4 +1,5 @@
 import type { DeploymentRecord } from "../lib/protocol/types";
+import { protocolConfig, publicEndpoints } from "../lib/protocol/config";
 
 export const deploymentRecords: DeploymentRecord[] = [
   {
@@ -18,17 +19,17 @@ export const deploymentRecords: DeploymentRecord[] = [
   },
   {
     key: "sepolia",
-    network: "Ethereum Sepolia",
-    status: "pending",
+    network: protocolConfig.evmNetwork,
+    status: protocolConfig.mode === "live" ? "verified" : "pending",
     contractName: "DonstraSettlementRelay + DonstraRegistry",
-    address: null,
-    deploymentTransaction: null,
-    explorerUrl: null,
-    sourceCommit: process.env.NEXT_PUBLIC_SOURCE_COMMIT ?? "Not recorded",
-    sourceFingerprint: process.env.NEXT_PUBLIC_SOURCE_FINGERPRINT ?? null,
+    address: protocolConfig.relayAddress,
+    deploymentTransaction: publicEndpoints.deploymentTransaction,
+    explorerUrl: publicEndpoints.deploymentTransaction ? `${publicEndpoints.evmExplorer}/tx/${publicEndpoints.deploymentTransaction}` : null,
+    sourceCommit: publicEndpoints.sourceCommit ?? "Not recorded",
+    sourceFingerprint: publicEndpoints.sourceFingerprint,
     policy: [
       { label: "Reporter quorum", value: "2 of 3 required" },
-      { label: "Reporter addresses", value: "Pending independent signers" },
+      { label: "Reporter addresses", value: process.env.NEXT_PUBLIC_REPORTER_ADDRESSES ?? "Pending independent signers" },
       { label: "Challenge window", value: "Pending deployment configuration" },
       { label: "Adjudication window", value: "Pending deployment configuration" },
       { label: "Maximum source age", value: "Pending deployment configuration" },
