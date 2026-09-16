@@ -71,6 +71,16 @@ registry address, and quorum.
 npm run verify:deployments
 ```
 
+Only after this verifier passes, configure the public web release values in
+`apps/web/.env.local`: the verified GenLayer, relay, and registry addresses;
+public EVM RPC and explorer URLs; relay deployment transaction and registry
+deployment block; source commit and fingerprint; and the three public reporter
+addresses. Set `NEXT_PUBLIC_DEPLOYMENT_VERIFIED=true` only for that verified
+release, then rebuild the static site. The web app stays in demo mode when the
+release record is incomplete or the verification marker is absent. Do not put
+reporter keys, wallet keys, API tokens, or private RPC credentials in
+`NEXT_PUBLIC_` variables.
+
 ## 6. Relay a finalized verdict
 
 Each reporter independently creates an artifact after checking the finalized

@@ -11,7 +11,7 @@ REASONABLE = json.dumps({
 })
 
 
-def testimony():
+def sample_testimony():
     return {
         "schema": "donstra.testimony.v1",
         "agent": "0x1111111111111111111111111111111111111111",
@@ -33,7 +33,7 @@ def receipt_id(payload):
 def test_adjudicates_and_stores_verdict(direct_deploy, direct_vm):
     direct_vm.mock_llm(r".*", REASONABLE)
     contract = direct_deploy("contracts/genlayer/donstra_adjudicator.py")
-    payload = testimony()
+    payload = sample_testimony()
     receipt = receipt_id(payload)
     result = contract.adjudicate(receipt, "1700000000", json.dumps(payload), '{"apy":18}')
     assert result["verdict"] == "GENUINE_REASONABLE"
@@ -45,7 +45,7 @@ def test_adjudicates_and_stores_verdict(direct_deploy, direct_vm):
 def test_validator_independently_checks_decision(direct_deploy, direct_vm):
     direct_vm.mock_llm(r".*", REASONABLE)
     contract = direct_deploy("contracts/genlayer/donstra_adjudicator.py")
-    payload = testimony()
+    payload = sample_testimony()
     contract.adjudicate(receipt_id(payload), "1700000000", json.dumps(payload), "{}")
     direct_vm.clear_mocks()
     direct_vm.mock_llm(r".*", json.dumps({
@@ -60,7 +60,7 @@ def test_validator_independently_checks_decision(direct_deploy, direct_vm):
 def test_receipt_cannot_be_adjudicated_twice(direct_deploy, direct_vm):
     direct_vm.mock_llm(r".*", REASONABLE)
     contract = direct_deploy("contracts/genlayer/donstra_adjudicator.py")
-    payload = testimony()
+    payload = sample_testimony()
     receipt = receipt_id(payload)
     contract.adjudicate(receipt, "1700000000", json.dumps(payload), "{}")
     with pytest.raises(Exception, match="already adjudicated"):
@@ -71,13 +71,13 @@ def test_rejects_receipt_not_derived_from_testimony(direct_deploy, direct_vm):
     direct_vm.mock_llm(r".*", REASONABLE)
     contract = direct_deploy("contracts/genlayer/donstra_adjudicator.py")
     with pytest.raises(Exception, match="Receipt does not match testimony"):
-        contract.adjudicate("0x" + "00" * 32, "1700000000", json.dumps(testimony()), "{}")
+        contract.adjudicate("0x" + "00" * 32, "1700000000", json.dumps(sample_testimony()), "{}")
 
 
 def test_receipt_case_cannot_be_used_to_shop_verdicts(direct_deploy, direct_vm):
     direct_vm.mock_llm(r".*", REASONABLE)
     contract = direct_deploy("contracts/genlayer/donstra_adjudicator.py")
-    payload = testimony()
+    payload = sample_testimony()
     receipt = receipt_id(payload)
     contract.adjudicate(receipt.upper().replace("0X", "0x"), "1700000000", json.dumps(payload), "{}")
     with pytest.raises(Exception, match="already adjudicated"):

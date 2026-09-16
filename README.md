@@ -38,7 +38,10 @@ npm run dev
 ```
 
 The web app runs at `http://localhost:3000`. GenLayer contract tests require
-Python 3.12+ and the packages in `contracts/genlayer/requirements.txt`.
+Python 3.12+, the packages in `contracts/genlayer/requirements.txt`, and a
+running GenLayer localnet at `http://localhost:4000/api`. Start localnet with
+`npx genlayer up --headless` before `python3 -m pytest -q`; an installed Python
+without those dependencies or a running simulator cannot exercise adjudication.
 
 ## Hackathon track
 
