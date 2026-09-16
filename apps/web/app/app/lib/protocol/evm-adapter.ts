@@ -10,6 +10,7 @@ import {
 import { deploymentRecords } from "../../data/deployments";
 import { protocolConfig, publicEndpoints } from "./config";
 import { registryAbi, settlementRelayEventsAbi } from "./registry-abi";
+import { recoverSettlementProof } from "./settlement-proof";
 import { ensureWalletChain, requireCurrentLifecycleAction, requireSuccessfulTransaction } from "./transaction-safety";
 import type { AgentRecord, LifecycleAction, ProtocolAdapter, ReceiptRecord, Verdict } from "./types";
 
@@ -33,7 +34,7 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
 
   async listReceipts(): Promise<ReceiptRecord[]> {
     const registry = protocolConfig.registryAddress!;
-    const [commits, executions, challenges, resolutions, relays, reporterEvents, requiredQuorum, challengeWindow, adjudicationWindow, latestBlock] = await Promise.all([
+    const [commits, executions, challenges, resolutions, relays, reporterEvents, requiredQuorum, sourceContract, sourceChainId, challengeWindow, adjudicationWindow, latestBlock] = await Promise.all([
       this.client.getContractEvents({ address: registry, abi: registryAbi, eventName: "TestimonyCommitted", fromBlock: publicEndpoints.deploymentBlock }),
       this.client.getContractEvents({ address: registry, abi: registryAbi, eventName: "ActionExecuted", fromBlock: publicEndpoints.deploymentBlock }),
       this.client.getContractEvents({ address: registry, abi: registryAbi, eventName: "Challenged", fromBlock: publicEndpoints.deploymentBlock }),
@@ -41,6 +42,8 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
       this.client.getContractEvents({ address: protocolConfig.relayAddress!, abi: settlementRelayEventsAbi, eventName: "SettlementRelayed", fromBlock: publicEndpoints.deploymentBlock }),
       this.client.getContractEvents({ address: protocolConfig.relayAddress!, abi: settlementRelayEventsAbi, eventName: "ReporterConfigured", fromBlock: publicEndpoints.deploymentBlock }),
       this.client.readContract({ address: protocolConfig.relayAddress!, abi: [{ type: "function", name: "quorum", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] }], functionName: "quorum" }),
+      this.client.readContract({ address: protocolConfig.relayAddress!, abi: [{ type: "function", name: "sourceContract", stateMutability: "view", inputs: [], outputs: [{ type: "address" }] }], functionName: "sourceContract" }),
+      this.client.readContract({ address: protocolConfig.relayAddress!, abi: [{ type: "function", name: "sourceChainId", stateMutability: "view", inputs: [], outputs: [{ type: "bytes32" }] }], functionName: "sourceChainId" }),
       this.client.readContract({ address: registry, abi: registryAbi, functionName: "challengeWindow" }),
       this.client.readContract({ address: registry, abi: registryAbi, functionName: "adjudicationWindow" }),
       this.client.getBlock({ blockTag: "latest" }),
@@ -58,6 +61,15 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
       const challenge = challengedById.get(id);
       const resolution = resolvedById.get(id);
       const relay = relayById.get(id);
+      const relayTransaction = relay ? await this.client.getTransaction({ hash: relay.transactionHash }) : null;
+      const proof = relayTransaction ? await recoverSettlementProof(relayTransaction.input, {
+        chainId: this.chain.id, relayAddress: protocolConfig.relayAddress!, sourceContract, sourceChainId,
+      }) : null;
+      if (relay && proof && (proof.settlement.receiptId !== id || proof.settlement.adjudicationTxHash !== relay.args.adjudicationTxHash || proof.settlement.verdict !== relay.args.verdict || proof.signatures.length !== Number(relay.args.signerCount))) {
+        throw new Error(`Settlement proof does not match relay event for ${id}`);
+      }
+      const settlementVerified = Boolean(relay && resolution && relay.transactionHash === resolution.transactionHash && proof);
+      const verifiedSigners = settlementVerified && proof ? proof.signers.map((signer) => signer.toLowerCase()) : [];
       const status = statusNames[Number(item[11])] ?? "cancelled";
       const verdict = resolution ? verdictNames[Number(resolution.args.verdict)] ?? "pending" : "pending";
       const nextAction = status === "executed" && now <= item[6] + challengeWindow ? "challenge"
@@ -84,8 +96,12 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
         challengeBondWei: challenge?.args.challengeBond?.toString() ?? "0",
         claimableWei: "0",
         bondRecipient: resolution?.args.bondRecipient ?? null,
-        reporterQuorum: { required: Number(requiredQuorum), total: reporterEvents.length, verified: relay && relay.transactionHash === resolution?.transactionHash ? Number(relay.args.signerCount) : 0 },
-        reporters: [],
+        reporterQuorum: { required: Number(requiredQuorum), total: reporterEvents.length, verified: verifiedSigners.length },
+        reporters: reporterEvents.map((event) => {
+          const address = event.args.reporter!;
+          const signerIndex = verifiedSigners.indexOf(address.toLowerCase());
+          return { address, verified: signerIndex >= 0, signature: signerIndex >= 0 ? proof?.signatures[signerIndex] : undefined };
+        }),
         transactions: [
           this.transaction("Commitment", commit.transactionHash, commit.blockNumber ? await this.blockTime(commit.blockNumber) : null),
           this.transaction("Execution", execution?.transactionHash ?? null, execution?.blockNumber ? await this.blockTime(execution.blockNumber) : null),

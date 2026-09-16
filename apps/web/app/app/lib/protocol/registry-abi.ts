@@ -43,3 +43,17 @@ export const settlementRelayEventsAbi = [
     { indexed: true, name: "reporter", type: "address" },
   ] },
 ] as const;
+
+export const settlementRelayCallAbi = [{
+  type: "function", name: "settle", stateMutability: "nonpayable",
+  inputs: [
+    { name: "settlement", type: "tuple", components: [
+      { name: "receiptId", type: "bytes32" },
+      { name: "adjudicationTxHash", type: "bytes32" },
+      { name: "verdict", type: "uint8" },
+      { name: "adjudicatedAt", type: "uint64" },
+      { name: "validUntil", type: "uint64" },
+    ] },
+    { name: "signatures", type: "bytes[]" },
+  ], outputs: [],
+}] as const;

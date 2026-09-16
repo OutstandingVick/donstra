@@ -18,6 +18,7 @@ export type ProtocolTransaction = {
 export type ReporterAttestation = {
   address: Address | null;
   verified: boolean;
+  signature?: Hex;
 };
 
 export type ReceiptRecord = {
