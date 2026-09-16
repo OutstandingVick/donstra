@@ -9,7 +9,7 @@ import {
 } from "viem";
 import { deploymentRecords } from "../../data/deployments";
 import { protocolConfig, publicEndpoints } from "./config";
-import { registryAbi } from "./registry-abi";
+import { registryAbi, settlementRelayEventsAbi } from "./registry-abi";
 import { ensureWalletChain, requireSuccessfulTransaction } from "./transaction-safety";
 import type { AgentRecord, LifecycleAction, ProtocolAdapter, ReceiptRecord, Verdict } from "./types";
 
@@ -33,18 +33,23 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
 
   async listReceipts(): Promise<ReceiptRecord[]> {
     const registry = protocolConfig.registryAddress!;
-    const [commits, executions, challenges, resolutions, challengeWindow, adjudicationWindow] = await Promise.all([
+    const [commits, executions, challenges, resolutions, relays, reporterEvents, requiredQuorum, challengeWindow, adjudicationWindow, latestBlock] = await Promise.all([
       this.client.getContractEvents({ address: registry, abi: registryAbi, eventName: "TestimonyCommitted", fromBlock: publicEndpoints.deploymentBlock }),
       this.client.getContractEvents({ address: registry, abi: registryAbi, eventName: "ActionExecuted", fromBlock: publicEndpoints.deploymentBlock }),
       this.client.getContractEvents({ address: registry, abi: registryAbi, eventName: "Challenged", fromBlock: publicEndpoints.deploymentBlock }),
       this.client.getContractEvents({ address: registry, abi: registryAbi, eventName: "Resolved", fromBlock: publicEndpoints.deploymentBlock }),
+      this.client.getContractEvents({ address: protocolConfig.relayAddress!, abi: settlementRelayEventsAbi, eventName: "SettlementRelayed", fromBlock: publicEndpoints.deploymentBlock }),
+      this.client.getContractEvents({ address: protocolConfig.relayAddress!, abi: settlementRelayEventsAbi, eventName: "ReporterConfigured", fromBlock: publicEndpoints.deploymentBlock }),
+      this.client.readContract({ address: protocolConfig.relayAddress!, abi: [{ type: "function", name: "quorum", stateMutability: "view", inputs: [], outputs: [{ type: "uint8" }] }], functionName: "quorum" }),
       this.client.readContract({ address: registry, abi: registryAbi, functionName: "challengeWindow" }),
       this.client.readContract({ address: registry, abi: registryAbi, functionName: "adjudicationWindow" }),
+      this.client.getBlock({ blockTag: "latest" }),
     ]);
     const executedById = new Map(executions.map((log) => [log.args.receiptId, log]));
     const challengedById = new Map(challenges.map((log) => [log.args.receiptId, log]));
     const resolvedById = new Map(resolutions.map((log) => [log.args.receiptId, log]));
-    const now = BigInt(Math.floor(Date.now() / 1000));
+    const relayById = new Map(relays.map((log) => [log.args.receiptId, log]));
+    const now = latestBlock.timestamp;
 
     return Promise.all(commits.slice().reverse().map(async (commit) => {
       const id = commit.args.receiptId!;
@@ -52,6 +57,7 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
       const execution = executedById.get(id);
       const challenge = challengedById.get(id);
       const resolution = resolvedById.get(id);
+      const relay = relayById.get(id);
       const status = statusNames[Number(item[11])] ?? "cancelled";
       const verdict = resolution ? verdictNames[Number(resolution.args.verdict)] ?? "pending" : "pending";
       const nextAction = status === "executed" && now <= item[6] + challengeWindow ? "challenge"
@@ -73,17 +79,18 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
         committedAt: new Date(Number(item[4]) * 1000).toISOString(),
         executedAt: item[6] ? new Date(Number(item[6]) * 1000).toISOString() : null,
         challengedAt: item[7] ? new Date(Number(item[7]) * 1000).toISOString() : null,
-        resolvedAt: null,
-        agentBondWei: item[8].toString(),
-        challengeBondWei: item[9].toString(),
+        resolvedAt: resolution?.blockNumber ? await this.blockTime(resolution.blockNumber) : null,
+        agentBondWei: commit.args.bond!.toString(),
+        challengeBondWei: challenge?.args.challengeBond?.toString() ?? "0",
         claimableWei: "0",
         bondRecipient: resolution?.args.bondRecipient ?? null,
-        reporterQuorum: { required: 2, total: 3, verified: resolution ? 2 : 0 },
+        reporterQuorum: { required: Number(requiredQuorum), total: reporterEvents.length, verified: relay && relay.transactionHash === resolution?.transactionHash ? Number(relay.args.signerCount) : 0 },
         reporters: [],
         transactions: [
           this.transaction("Commitment", commit.transactionHash, commit.blockNumber ? await this.blockTime(commit.blockNumber) : null),
           this.transaction("Execution", execution?.transactionHash ?? null, execution?.blockNumber ? await this.blockTime(execution.blockNumber) : null),
           this.transaction("Challenge", challenge?.transactionHash ?? null, challenge?.blockNumber ? await this.blockTime(challenge.blockNumber) : null),
+          { label: "Adjudication", network: "GenLayer Studionet" as const, hash: relay?.args.adjudicationTxHash ?? null, timestamp: null, explorerUrl: null },
           this.transaction("Settlement", resolution?.transactionHash ?? null, resolution?.blockNumber ? await this.blockTime(resolution.blockNumber) : null),
         ],
         binding: { receipt: true, testimony: true, evidence: false, action: Boolean(execution), commitmentTime: true, futureKnowledge: "not-evaluated" },

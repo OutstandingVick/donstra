@@ -31,3 +31,15 @@ export const registryAbi = [
   { type: "function", name: "expireChallenge", stateMutability: "nonpayable", inputs: [{ name: "receiptId", type: "bytes32" }], outputs: [] },
   { type: "function", name: "withdraw", stateMutability: "nonpayable", inputs: [{ name: "recipient", type: "address" }], outputs: [] },
 ] as const;
+
+export const settlementRelayEventsAbi = [
+  { type: "event", name: "SettlementRelayed", inputs: [
+    { indexed: true, name: "receiptId", type: "bytes32" },
+    { indexed: true, name: "adjudicationTxHash", type: "bytes32" },
+    { indexed: false, name: "verdict", type: "uint8" },
+    { indexed: false, name: "signerCount", type: "uint256" },
+  ] },
+  { type: "event", name: "ReporterConfigured", inputs: [
+    { indexed: true, name: "reporter", type: "address" },
+  ] },
+] as const;
