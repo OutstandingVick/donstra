@@ -6,7 +6,7 @@ import { deploymentLinks } from "./deployment-links";
 const productLinks = [
   { label: "App", href: "/app", external: false },
   { label: "GitHub", href: "https://github.com/OutstandingVick/donstra", external: true },
-  { label: "Docs", href: "https://github.com/OutstandingVick/donstra/blob/main/README.md", external: true },
+  { label: "Docs", href: "/docs", external: false },
 ] as const;
 
 export function SiteFooter() {

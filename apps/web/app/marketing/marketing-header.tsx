@@ -6,6 +6,7 @@ const navLinks = [
   { label: "Why it matters", href: "#problem", visibility: "sm:inline-flex" },
   { label: "How it works", href: "#how-donstra-works", visibility: "lg:inline-flex" },
   { label: "Receipts", href: "#verifiable-receipts", visibility: "lg:inline-flex" },
+  { label: "Docs", href: "/docs", visibility: "sm:inline-flex" },
 ] as const;
 
 export function MarketingHeader() {
