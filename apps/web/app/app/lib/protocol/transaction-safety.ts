@@ -13,3 +13,7 @@ export async function ensureWalletChain(provider: ChainProvider, expectedChainId
   const confirmed = await provider.request({ method: "eth_chainId" });
   if (confirmed !== expectedHex) throw new Error(`Wallet is on the wrong network. Switch to chain ${expectedChainId} before submitting.`);
 }
+
+export function requireCurrentLifecycleAction(requested: string, available: string | null) {
+  if (requested !== available) throw new Error("This lifecycle action is no longer valid for the current registry state or deadline. Refresh the receipt.");
+}

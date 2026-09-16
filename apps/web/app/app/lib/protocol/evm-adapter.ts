@@ -10,7 +10,7 @@ import {
 import { deploymentRecords } from "../../data/deployments";
 import { protocolConfig, publicEndpoints } from "./config";
 import { registryAbi, settlementRelayEventsAbi } from "./registry-abi";
-import { ensureWalletChain, requireSuccessfulTransaction } from "./transaction-safety";
+import { ensureWalletChain, requireCurrentLifecycleAction, requireSuccessfulTransaction } from "./transaction-safety";
 import type { AgentRecord, LifecycleAction, ProtocolAdapter, ReceiptRecord, Verdict } from "./types";
 
 const statusNames = ["cancelled", "committed", "executed", "challenged", "resolved", "cancelled"] as const;
@@ -136,6 +136,13 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
     receipt: ReceiptRecord,
     onSubmitted?: (transactionHash: ViemHex) => void,
   ) {
+    if (action !== "challenge" && action !== "finalize" && action !== "expire" && action !== "withdraw") {
+      throw new Error(`${action} requires sealed testimony or exact action parameters that are not available from this receipt view.`);
+    }
+    if (action !== "withdraw") {
+      const current = await this.getReceipt(receipt.id);
+      requireCurrentLifecycleAction(action, current?.nextAction ?? null);
+    }
     if (!window.ethereum) throw new Error("Install an EIP-1193 wallet to submit this transaction.");
     if (!protocolConfig.registryAddress) throw new Error("The verified registry address is not configured.");
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" }) as string[];
@@ -151,9 +158,11 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
     } else if (action === "expire") {
       transactionHash = await wallet.writeContract({ address: protocolConfig.registryAddress, abi: registryAbi, functionName: "expireChallenge", args: [receipt.id as ViemHex] });
     } else if (action === "withdraw") {
+      const claimable = await this.client.readContract({ address: protocolConfig.registryAddress, abi: registryAbi, functionName: "claimable", args: [account] });
+      if (claimable === 0n) throw new Error("This wallet has no claimable bond balance on the registry.");
       transactionHash = await wallet.writeContract({ address: protocolConfig.registryAddress, abi: registryAbi, functionName: "withdraw", args: [account] });
     } else {
-      throw new Error(`${action} requires sealed testimony or exact action parameters that are not available from this receipt view.`);
+      throw new Error("This lifecycle action is not available from the receipt view.");
     }
     onSubmitted?.(transactionHash);
     const confirmation = await this.client.waitForTransactionReceipt({ hash: transactionHash });
