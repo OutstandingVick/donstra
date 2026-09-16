@@ -1,34 +1,33 @@
-const testimonyFields = ["Evidence", "Belief", "Confidence", "Mandate", "Exact proposed action"] as const;
-
 const protocolStages = [
-  ["01", "Testimony sealed", "The complete decision context is fixed before execution."],
-  ["02", "Commitment posted", "A durable digest and agent bond establish the record."],
-  ["03", "Exact action executes", "Only the action bound to that commitment can run."],
-  ["04", "Challenge remains open", "A challenger can contest the decision within the window."],
-  ["05", "GenLayer adjudicates", "Validators judge the genuine testimony—not a rewritten account."],
-  ["06", "Economics settle", "Bonds move according to the final verdict."],
+  ["01", "Testimony", "The complete decision context is sealed before execution."],
+  ["02", "Commitment", "A durable digest and agent bond establish the record."],
+  ["03", "Execution", "Only the action bound to that commitment can run."],
+  ["04", "Challenge", "A challenger can contest the decision within the window."],
+  ["05", "Adjudication", "Validators judge the genuine testimony, not a rewritten account."],
+  ["06", "Settlement", "Bonds move according to the final verdict."],
+] as const;
+
+const ringProgress = [
+  "bg-[conic-gradient(from_0deg,#16DB65_0_58deg,rgba(243,248,241,0.12)_58deg_360deg)]",
+  "bg-[conic-gradient(from_0deg,#16DB65_0_112deg,rgba(243,248,241,0.12)_112deg_360deg)]",
+  "bg-[conic-gradient(from_0deg,#16DB65_0_168deg,rgba(243,248,241,0.12)_168deg_360deg)]",
+  "bg-[conic-gradient(from_0deg,#16DB65_0_224deg,#5C1A1B_224deg_246deg,rgba(243,248,241,0.12)_246deg_360deg)]",
+  "bg-[conic-gradient(from_0deg,#16DB65_0_250deg,#5C1A1B_250deg_302deg,rgba(243,248,241,0.12)_302deg_360deg)]",
+  "bg-[conic-gradient(from_0deg,#16DB65_0_260deg,#5C1A1B_260deg_360deg)]",
 ] as const;
 
 export function ProtocolSequence() {
   return (
-    <div>
-      <div className="grid gap-6 border-y border-white/10 py-7 sm:grid-cols-[minmax(0,0.72fr)_minmax(0,1.28fr)] sm:items-center sm:gap-10 sm:py-8">
-        <p className="m-0 text-sm font-semibold text-[#F3F8F1]">One testimony contains</p>
-        <ul className="m-0 flex list-none flex-wrap gap-x-5 gap-y-3 p-0" aria-label="Testimony fields">
-          {testimonyFields.map((field) => <li key={field} className="flex items-center gap-2 text-sm text-[#D6E2D3]/75"><span className="size-1 rounded-full bg-[#16DB65]" aria-hidden="true" />{field}</li>)}
-        </ul>
-      </div>
-
-      <ol className="m-0 list-none p-0" aria-label="How Donstra works">
-        {protocolStages.map(([number, title, description], index) => (
-          <li key={title} className="relative grid gap-4 py-7 sm:grid-cols-[4rem_15rem_minmax(0,1fr)] sm:items-baseline sm:gap-7 sm:py-8">
-            {index > 0 && <span className="absolute inset-x-0 top-0 h-px bg-white/10" aria-hidden="true" />}
-            <span className="font-mono text-xs text-[#16DB65]">{number}</span>
-            <h3 className="m-0 text-xl font-semibold tracking-[-0.025em] text-[#F3F8F1] sm:text-2xl">{title}</h3>
-            <p className="m-0 max-w-[42rem] text-base leading-7 text-[#B7C5B3]/70 sm:text-lg sm:leading-8">{description}</p>
-          </li>
-        ))}
-      </ol>
-    </div>
+    <ol className="m-0 grid list-none gap-x-10 gap-y-16 p-0 sm:grid-cols-2 sm:gap-y-20 lg:grid-cols-3 lg:gap-x-16 lg:gap-y-24" aria-label="How Donstra works">
+      {protocolStages.map(([number, title, description], index) => (
+        <li key={title} className="mx-auto flex max-w-[24rem] flex-col items-center text-center">
+          <span className={`grid size-[4.5rem] place-items-center rounded-full p-[2px] ${ringProgress[index]}`}>
+            <span className="grid size-full place-items-center rounded-full bg-[#0D160B] font-mono text-sm font-semibold text-[#F3F8F1]">{number}</span>
+          </span>
+          <h3 className="mb-0 mt-7 text-xl font-semibold tracking-[-0.03em] text-[#F3F8F1] sm:text-2xl">{title}</h3>
+          <p className="mb-0 mt-3 text-base leading-7 text-[#D6E2D3]/60">{description}</p>
+        </li>
+      ))}
+    </ol>
   );
 }
