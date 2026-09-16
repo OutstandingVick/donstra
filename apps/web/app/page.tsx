@@ -1,7 +1,6 @@
 import { HeroSection } from "./marketing/hero-section";
 import { ExistingSystemsSection } from "./marketing/existing-systems-section";
 import { EconomicAccountabilitySection } from "./marketing/economic-accountability-section";
-import { FinalCtaSection } from "./marketing/final-cta-section";
 import { HowDonstraWorksSection } from "./marketing/how-donstra-works-section";
 import { LiveAccountabilitySection } from "./marketing/live-accountability-section";
 import { MarketingHeader } from "./marketing/marketing-header";
@@ -24,7 +23,6 @@ export default function Home() {
         <WhatDonstraProvesSection />
         <EconomicAccountabilitySection />
         <VerifiableReceiptsSection />
-        <FinalCtaSection />
       </main>
       <SiteFooter />
     </div>

@@ -1,4 +1,4 @@
-import { ArrowDown, BadgeDollarSign, Gavel, Scale, UsersRound, WalletCards } from "lucide-react";
+import { BadgeDollarSign, Gavel, Scale, UsersRound, WalletCards } from "lucide-react";
 
 const accountabilitySteps = [
   { label: "Agent bond", copy: "The agent puts capital behind the decision before it can act.", icon: WalletCards },
@@ -32,21 +32,6 @@ export function EconomicAccountabilitySection() {
                 );
               })}
             </ol>
-          </div>
-        </div>
-
-        <div className="mt-20 overflow-hidden rounded-xl border border-[#16DB65]/25 bg-[#091007] sm:mt-28">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_4rem_minmax(0,1fr)] lg:items-stretch">
-            <div className="p-7 sm:p-10 lg:p-12">
-              <p className="m-0 text-xs font-semibold uppercase tracking-[0.15em] text-[#B7C5B3]/65">Enforceable settlement</p>
-              <p className="mb-0 mt-4 max-w-[24ch] text-balance text-2xl font-semibold leading-9 tracking-[-0.03em] text-[#F3F8F1] sm:text-3xl sm:leading-10">The final verdict determines how the bonded funds are distributed.</p>
-            </div>
-            <div className="grid min-h-16 place-items-center border-y border-[#16DB65]/20 bg-[#16DB65]/[0.06] text-[#16DB65] lg:border-x lg:border-y-0"><ArrowDown size={20} strokeWidth={1.5} className="lg:-rotate-90" aria-hidden="true" /></div>
-            <div className="p-7 sm:p-10 lg:p-12">
-              <p className="m-0 text-xs font-semibold uppercase tracking-[0.15em] text-[#16DB65]">Claimable outcome</p>
-              <p className="mb-0 mt-4 max-w-[26ch] text-balance text-2xl font-semibold leading-9 tracking-[-0.03em] text-[#F3F8F1] sm:text-3xl sm:leading-10">The rightful recipient can withdraw the settled amount onchain.</p>
-              <p className="mb-0 mt-4 text-sm leading-6 text-[#D6E2D3]/65">No operator discretion. No offchain promise. The settlement rule is part of the protocol state.</p>
-            </div>
           </div>
         </div>
       </div>

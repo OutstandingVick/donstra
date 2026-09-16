@@ -26,9 +26,9 @@ export function WhatDonstraProvesSection() {
         </header>
 
         <div className="mt-16 grid border-t border-white/10 lg:mt-24 lg:grid-cols-[minmax(0,1.04fr)_minmax(24rem,0.96fr)]">
-          <ol className="m-0 list-none border-white/10 p-0 lg:border-e" aria-label="Proof categories">
+          <ol className="m-0 list-none border-white/10 p-0 lg:grid lg:grid-rows-[1.8fr_repeat(4,1fr)] lg:border-e" aria-label="Proof categories">
             {proofCategories.map((proof, index) => (
-              <li key={proof.name} className={index === 0 ? "border-b border-[#16DB65]/55 bg-[#5C1A1B]/25 px-5 py-7 sm:px-7 sm:py-8" : "border-b border-white/10 px-5 py-6 sm:px-7 sm:py-7"}>
+              <li key={proof.name} className={index === 0 ? "border-b border-[#16DB65]/55 bg-[#5C1A1B]/25 px-5 py-7 sm:px-7 sm:py-8 lg:flex lg:flex-col lg:justify-center" : "border-b border-white/10 px-5 py-6 sm:px-7 sm:py-7 lg:flex lg:flex-col lg:justify-center"}>
                 <div className="flex items-baseline gap-5">
                   <span className={index === 0 ? "font-mono text-sm font-semibold tracking-[0.08em] text-[#16DB65]" : "font-mono text-sm tracking-[0.08em] text-[#B7C5B3]/55"}>{proof.number}</span>
                   <h3 className={index === 0 ? "m-0 text-xl font-semibold tracking-[-0.02em] text-[#F3F8F1] sm:text-2xl" : "m-0 text-lg font-medium tracking-[-0.01em] text-[#D6E2D3]/75 sm:text-xl"}>{proof.name}</h3>
