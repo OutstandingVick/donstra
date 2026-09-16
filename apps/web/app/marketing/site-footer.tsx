@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { deploymentLinks } from "./deployment-links";
@@ -50,8 +51,11 @@ export function SiteFooter() {
           donstra
         </Link>
       </div>
-      <div className="mx-auto mt-12 flex w-full max-w-[90rem] flex-col gap-2 border-t border-white/10 pt-6 text-xs leading-5 text-[#B7C5B3]/60 sm:flex-row sm:items-center sm:justify-between">
-        <span>Donstra — accountability before action.</span>
+      <div className="relative z-10 mx-auto mt-12 flex w-full max-w-[90rem] flex-col gap-5 pb-8 text-xs leading-5 text-[#D6E2D3]/70 sm:flex-row sm:items-end sm:justify-between sm:pb-10">
+        <div className="flex items-center gap-3">
+          <Image src="/donstra-logo.svg" alt="" width={100} height={25} className="h-6 w-auto" />
+          <span>Donstra — accountability before action.</span>
+        </div>
         <span>Public proof. No hidden cognition claimed.</span>
       </div>
     </footer>
