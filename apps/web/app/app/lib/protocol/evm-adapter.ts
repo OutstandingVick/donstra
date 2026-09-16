@@ -10,7 +10,7 @@ import {
 import { deploymentRecords } from "../../data/deployments";
 import { protocolConfig, publicEndpoints } from "./config";
 import { registryAbi } from "./registry-abi";
-import { requireSuccessfulTransaction } from "./transaction-safety";
+import { ensureWalletChain, requireSuccessfulTransaction } from "./transaction-safety";
 import type { AgentRecord, LifecycleAction, ProtocolAdapter, ReceiptRecord, Verdict } from "./types";
 
 const statusNames = ["cancelled", "committed", "executed", "challenged", "resolved", "cancelled"] as const;
@@ -133,8 +133,7 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
     if (!protocolConfig.registryAddress) throw new Error("The verified registry address is not configured.");
     const accounts = await window.ethereum.request({ method: "eth_requestAccounts" }) as string[];
     const account = getAddress(accounts[0]);
-    const currentChain = Number(await window.ethereum.request({ method: "eth_chainId" }));
-    if (currentChain !== this.chain.id) await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: `0x${this.chain.id.toString(16)}` }] });
+    await ensureWalletChain(window.ethereum, this.chain.id);
     const wallet = createWalletClient({ account, chain: this.chain, transport: custom(window.ethereum) });
     let transactionHash: ViemHex;
     if (action === "challenge") {
