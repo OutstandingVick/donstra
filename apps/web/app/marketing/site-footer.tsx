@@ -11,6 +11,8 @@ const productLinks = [
 export function SiteFooter() {
   return (
     <footer className="relative isolate overflow-hidden border-t border-white/10 bg-[#0D160B] px-5 pt-16 text-[#F3F8F1] sm:px-8 sm:pt-20 lg:min-h-[48rem] lg:px-12 lg:pt-24" aria-label="Donstra footer">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-[#5C1A1B]/35 via-[#16DB65]/[0.07] to-transparent" aria-hidden="true" />
+      <div className="pointer-events-none absolute -bottom-44 left-1/4 size-[34rem] rounded-full bg-[#16DB65]/[0.10] blur-[110px]" aria-hidden="true" />
       <div className="relative z-10 mx-auto grid w-full max-w-[90rem] gap-12 md:grid-cols-3 md:items-start md:gap-16">
         <div className="max-w-sm">
           <p className="m-0 font-mono text-sm text-[#B7C5B3]/60">Donstra</p>
