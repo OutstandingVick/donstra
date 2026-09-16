@@ -17,8 +17,19 @@ const sourceFingerprint = process.env.NEXT_PUBLIC_SOURCE_FINGERPRINT?.trim();
 const releaseRecorded = Boolean(deploymentTransaction && isHash(deploymentTransaction) && sourceCommit && sourceFingerprint);
 const deploymentVerified = process.env.NEXT_PUBLIC_DEPLOYMENT_VERIFIED === "true";
 
+export function isLiveReady(input: {
+  registryAddress: Address | null;
+  relayAddress: Address | null;
+  genLayerAddress: Address | null;
+  rpcConfigured: boolean;
+  releaseRecorded: boolean;
+  deploymentVerified: boolean;
+}) {
+  return Boolean(input.registryAddress && input.relayAddress && input.genLayerAddress && input.rpcConfigured && input.releaseRecorded && input.deploymentVerified);
+}
+
 export const protocolConfig: PublicProtocolConfig = {
-  mode: registryAddress && relayAddress && genLayerAddress && rpcConfigured && releaseRecorded && deploymentVerified ? "live" : "demo",
+  mode: isLiveReady({ registryAddress, relayAddress, genLayerAddress, rpcConfigured, releaseRecorded, deploymentVerified }) ? "live" : "demo",
   evmChainId: Number(process.env.NEXT_PUBLIC_EVM_CHAIN_ID ?? "11155111"),
   evmNetwork: Number(process.env.NEXT_PUBLIC_EVM_CHAIN_ID ?? "11155111") === 11155111 ? "Sepolia" : "Configured EVM",
   evmRpcConfigured: rpcConfigured,

@@ -3,6 +3,7 @@ import test from "node:test";
 import { queueForReceipt } from "../../data/receipts";
 import { scenarios } from "../../data/scenarios";
 import { DemoProtocolAdapter } from "./demo-adapter";
+import { isLiveReady, protocolConfig } from "./config";
 import type { ProtocolAdapter } from "./types";
 
 test("demo adapter exposes every challenge queue state", async () => {
@@ -24,6 +25,22 @@ test("demo deployment keeps Sepolia addresses unavailable", async () => {
   const sepolia = deployments.find(({ key }) => key === "sepolia");
   assert.equal(sepolia?.address, null);
   assert.equal(sepolia?.deploymentTransaction, null);
+  assert.equal(protocolConfig.mode, "demo");
+});
+
+test("live mode requires all public deployment evidence", () => {
+  const complete = {
+    registryAddress: "0x1111111111111111111111111111111111111111" as const,
+    relayAddress: "0x2222222222222222222222222222222222222222" as const,
+    genLayerAddress: "0x3333333333333333333333333333333333333333" as const,
+    rpcConfigured: true,
+    releaseRecorded: true,
+    deploymentVerified: true,
+  };
+  assert.equal(isLiveReady(complete), true);
+  assert.equal(isLiveReady({ ...complete, deploymentVerified: false }), false);
+  assert.equal(isLiveReady({ ...complete, releaseRecorded: false }), false);
+  assert.equal(isLiveReady({ ...complete, relayAddress: null }), false);
 });
 
 test("reasonable inspector agrees with its scenario and receipt", () => {
