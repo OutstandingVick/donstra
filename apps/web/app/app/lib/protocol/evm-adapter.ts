@@ -10,6 +10,7 @@ import {
 import { deploymentRecords } from "../../data/deployments";
 import { protocolConfig, publicEndpoints } from "./config";
 import { registryAbi } from "./registry-abi";
+import { requireSuccessfulTransaction } from "./transaction-safety";
 import type { AgentRecord, LifecycleAction, ProtocolAdapter, ReceiptRecord, Verdict } from "./types";
 
 const statusNames = ["cancelled", "committed", "executed", "challenged", "resolved", "cancelled"] as const;
@@ -149,7 +150,8 @@ export class EvmProtocolAdapter implements ProtocolAdapter {
       throw new Error(`${action} requires sealed testimony or exact action parameters that are not available from this receipt view.`);
     }
     onSubmitted?.(transactionHash);
-    await this.client.waitForTransactionReceipt({ hash: transactionHash });
+    const confirmation = await this.client.waitForTransactionReceipt({ hash: transactionHash });
+    requireSuccessfulTransaction(confirmation.status);
     return { transactionHash };
   }
 
