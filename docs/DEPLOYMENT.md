@@ -6,10 +6,10 @@ The v0.3-compatible adjudicator source is
 `contracts/genlayer/donstra_adjudicator_studio_dev.py`. It was deployed on
 Studio Next / Studio-dev (chain ID 61997) for the Agent Tank submission:
 
-- Contract: `0x38C8E728F2A71C5373a3cF7F5862ddD6cE6CED8a`
-- Deployment transaction: `0x7f0b551993d0f00e87c2ac4f0e8e1a2bd12407f429e29b76306fb748cca9733a`
-- [Contract explorer](https://explorer-studio-dev.genlayer.com/address/0x38C8E728F2A71C5373a3cF7F5862ddD6cE6CED8a)
-- [Finalized deployment](https://explorer-studio-dev.genlayer.com/tx/0x7f0b551993d0f00e87c2ac4f0e8e1a2bd12407f429e29b76306fb748cca9733a)
+- Contract: `0x36545935EF983B5A1ADb39dD68Ec90612AfA94E9`
+- Deployment transaction: `0x53ae5b57c7a7ea1fdad268fc7049f9bd04de4d18be2b66c9272d314172331807`
+- [Contract explorer](https://explorer-studio-dev.genlayer.com/address/0x36545935EF983B5A1ADb39dD68Ec90612AfA94E9)
+- [Deployment transaction](https://explorer-studio-dev.genlayer.com/tx/0x53ae5b57c7a7ea1fdad268fc7049f9bd04de4d18be2b66c9272d314172331807)
 
 This preview is separate from Studionet (61999) and the existing Sepolia
 registry release. The public guided console still labels its scenario receipts
