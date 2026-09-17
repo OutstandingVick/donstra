@@ -73,8 +73,17 @@ export async function observeFinalizedVerdict(
   if (typeof stored.receipt_id !== "string" || stored.receipt_id.toLowerCase() !== receiptId.toLowerCase()) {
     throw new Error("GenLayer verdict is bound to a different receipt");
   }
+  // A revealed testimony that does not reproduce the committed digest is
+  // deterministic fabrication: the altered content is not the committed
+  // receipt, so the verdict is FABRICATED regardless of the model output.
   if (typeof stored.testimony_digest !== "string" || stored.testimony_digest.toLowerCase() !== expected.testimonyDigest.toLowerCase()) {
-    throw new Error("GenLayer verdict testimony does not match the EVM commitment");
+    return {
+      receiptId,
+      adjudicationTxHash,
+      adjudicatedAt: timestampSeconds(receipt),
+      verdict: "FABRICATED",
+      reason: "Revealed testimony does not reproduce the committed testimony digest",
+    };
   }
   if (typeof stored.action_digest !== "string" || stored.action_digest.toLowerCase() !== expected.actionDigest.toLowerCase()) {
     throw new Error("GenLayer verdict action does not match the EVM commitment");

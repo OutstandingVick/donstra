@@ -52,9 +52,9 @@ and **Onchain Justice**.
 
 The repository contains the protocol implementation, hardened bond lifecycle,
 commitment-bound GenLayer adjudication, authenticated 2-of-3-capable settlement,
-reporter service, tests, demo, and live onchain dashboard. The initial GenLayer
-contract is finalized on Studionet; the commitment-bound revision and EVM
-contracts remain deployment gates requiring user-controlled funded signers.
+reporter service, tests, demo, and live onchain dashboard. The commitment-bound
+GenLayer adjudicator is finalized on Studionet. The EVM contracts and full live
+release remain deployment gates requiring user-controlled funded signers.
 
 See [the live deployment runbook](docs/DEPLOYMENT.md) for the secure GenLayer,
 relay, registry, and verification sequence.

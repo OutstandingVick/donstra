@@ -41,14 +41,16 @@ describe("finalized verdict observation", () => {
     expect(result.adjudicatedAt).toBe(1_700_000_005n);
   });
 
-  it("rejects a verdict for different testimony", async () => {
-    await expect(observeFinalizedVerdict(
+  it("reports fabrication when the revealed testimony differs from the commitment", async () => {
+    const result = await observeFinalizedVerdict(
       client({ testimony_digest: `0x${"66".repeat(32)}` }),
       sourceContract,
       receiptId,
       transactionHash,
       binding,
-    )).rejects.toThrow("testimony does not match");
+    );
+    expect(result.verdict).toBe("FABRICATED");
+    expect(result.reason).toMatch(/committed testimony digest/);
   });
 
   it("rejects a verdict with a substituted commitment timestamp", async () => {

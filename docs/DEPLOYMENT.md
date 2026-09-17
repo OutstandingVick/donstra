@@ -1,5 +1,21 @@
 # Live deployment runbook
 
+## Current GenLayer Studionet deployment
+
+The commitment-bound `DonstraAdjudicator` revision is finalized on Studionet
+(chain ID 61999). This is a temporary demo deployment, not a Bradbury release:
+
+- Contract: `0x76C076719ca2A3d08a4331154135Af48F43aDDC2`
+- Deployment transaction: `0x7af961b4e1670deb843c29d37adb7fd9cac241c336f07bd76d07923b735f92cc`
+- [Finalized transaction](https://explorer-studio.genlayer.com/tx/0x7af961b4e1670deb843c29d37adb7fd9cac241c336f07bd76d07923b735f92cc)
+- [Contract explorer](https://explorer-studio.genlayer.com/address/0x76C076719ca2A3d08a4331154135Af48F43aDDC2)
+- Source commit: `bbfd8ed3f2acb59c9e38f98d852efe68f5df4bba`
+- Source SHA-256: `8a2ba8d2385564ce29758de462701c32e9c121f87b83215069f06edad72d1e94`
+
+The remaining release steps below still require a separately verified EVM
+deployment and independent reporter signers. Do not mark the app live from this
+GenLayer deployment alone.
+
 Donstra deploys in source-to-destination order: GenLayer adjudicator first,
 then the EVM settlement relay, which creates its authorized registry in the same
 transaction. Never place private keys in `.env` files committed to Git.

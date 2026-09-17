@@ -15,7 +15,7 @@ contract Deploy {
     Vm private constant vm = Vm(address(uint160(uint256(keccak256("hevm cheat code")))));
 
     function run() external returns (DonstraSettlementRelay relay) {
-        address sourceContract = vm.envAddress("GENLAYER_CONTRACT_ADDRESS");
+        address sourceContract = vm.envAddress("GENLAYER_CONTRACT_ADDRESS", ",")[0];
         string memory sourceNetwork = vm.envString("GENLAYER_NETWORK");
         address[] memory reporters = vm.envAddress("REPORTER_ADDRESSES", ",");
         uint256 configuredQuorum = vm.envUint("REPORTER_QUORUM");

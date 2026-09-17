@@ -29,7 +29,7 @@
 ## Deployment gate
 
 - [x] Deploy the initial `DonstraAdjudicator` to Studionet
-- [ ] Deploy the commitment-bound `DonstraAdjudicator` revision to Studionet
+- [x] Deploy the commitment-bound `DonstraAdjudicator` revision to Studionet
 - [ ] Deploy `DonstraRegistry` with the settlement relay as adjudicator
 - [ ] Put addresses in `apps/web/.env.local`
 - [ ] Run one real reasonable and one real negligent consensus transaction
