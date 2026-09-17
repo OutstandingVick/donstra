@@ -91,7 +91,7 @@ export function HeroSection() {
       <div className="mx-auto w-full max-w-[90rem]">
         <div className="mx-auto max-w-[62rem] text-center">
           <p className="mb-0 flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.16em] text-[#B7C5B3]/65"><span className="h-px w-8 bg-[#16DB65]" aria-hidden="true" /><span className="hidden sm:inline">Accountability infrastructure for autonomous agents</span><span className="sm:hidden">Accountability for autonomous agents</span><span className="h-px w-8 bg-[#16DB65]" aria-hidden="true" /></p>
-          <h1 className="mb-0 mt-8 text-balance text-[clamp(2.75rem,7vw,7rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-[#F3F8F1]">Agents can rewrite the story. <span className="text-[#81ECAB]">Not the proof.</span></h1>
+          <h1 className="mb-0 mt-8 text-balance text-[clamp(2.75rem,7vw,7rem)] font-semibold leading-[0.95] tracking-[-0.06em] text-[#F3F8F1]">Seal an agent’s reasoning <span className="text-[#81ECAB]">before it acts.</span></h1>
           <p className="mb-0 mt-8 max-w-[42rem] text-pretty text-lg leading-8 text-[#D6E2D3]/70 sm:text-xl sm:leading-9 mx-auto">Donstra seals what an agent knew, believed, and intended before it acts—then binds that testimony to the exact action for challenge and independent judgment.</p>
           <p className="mb-0 mt-6 max-w-[36rem] text-pretty text-base leading-7 text-[#EAF2E7]/85 mx-auto">Make post-hoc excuses irrelevant for autonomous agents.</p>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">

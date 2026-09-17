@@ -94,21 +94,13 @@ Use INCONCLUSIVE when the evidence is insufficient or contradictory.
         testimony_digest = self._digest("DONSTRA_TESTIMONY_V1", testimony)
         action_digest = self._digest("DONSTRA_ACTION_V1", testimony["proposedAction"])
 
-        def leader_fn() -> dict:
-            return self._evaluate(commitment_timestamp, testimony_json, evidence_json)
+        def leader_fn() -> str:
+            return json.dumps(self._evaluate(commitment_timestamp, testimony_json, evidence_json), sort_keys=True)
 
-        def validator_fn(leader_result) -> bool:
-            if not isinstance(leader_result, gl.vm.Return):
-                return False
-            independent = leader_fn()
-            proposed = leader_result.calldata
-            return (
-                proposed["verdict"] == independent["verdict"]
-                and proposed["future_knowledge"] == independent["future_knowledge"]
-                and abs(int(proposed["confidence_bps"]) - int(independent["confidence_bps"])) <= 1500
-            )
-
-        result = gl.vm.run_nondet_unsafe(leader_fn, validator_fn)
+        result = json.loads(gl.eq_principle.prompt_comparative(
+            leader_fn,
+            principle="Verdict and future_knowledge must match exactly; confidence_bps may differ by at most 1500. Reasons may differ but must cite the same evidence and mandate.",
+        ))
         result["receipt_id"] = receipt_key
         result["testimony_digest"] = testimony_digest
         result["action_digest"] = action_digest
