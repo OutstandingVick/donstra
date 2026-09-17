@@ -38,3 +38,24 @@ export function recordDemoRun(scenario: ReceiptRecord["scenario"]): ReceiptRecor
   window.dispatchEvent(new Event("donstra:demo-receipts"));
   return receipt;
 }
+
+export function openDemoChallenge(receipt: ReceiptRecord): ReceiptRecord {
+  if (receipt.source !== "demo" || receipt.status !== "executed" || receipt.nextAction !== "challenge") {
+    throw new Error("This receipt is not eligible for a demo challenge.");
+  }
+  if (typeof window === "undefined") throw new Error("Demo storage is unavailable.");
+  const challengedAt = new Date().toISOString();
+  const challenged: ReceiptRecord = {
+    ...receipt,
+    status: "challenged",
+    challengedAt,
+    nextAction: null,
+    nextActionReason: "Demo challenge opened locally. No wallet transaction, bond transfer, or GenLayer adjudication occurred.",
+    adjudicationReason: "A guided demo challenge was opened against the proposed 40% exposure under a 15% mandate. Adjudication and settlement have not occurred.",
+    transactions: receipt.transactions.map((transaction) => transaction.label === "Challenge" ? { ...transaction, timestamp: challengedAt, hash: null, explorerUrl: null } : transaction),
+    metadata: { ...receipt.metadata, demoChallenge: true, onchainChallenge: false },
+  };
+  window.localStorage.setItem(storageKey, JSON.stringify([challenged, ...readDemoRuns().filter((item) => item.id !== challenged.id)].slice(0, 12)));
+  window.dispatchEvent(new Event("donstra:demo-receipts"));
+  return challenged;
+}
