@@ -41,6 +41,7 @@ export default function ChallengesPage() {
           try {
             openDemoChallenge(receipt);
             setDemoMessage("Demo challenge opened locally. No wallet transaction, bond transfer, or GenLayer adjudication occurred.");
+            setQueue("active");
             void receiptState.refresh();
           } catch (error) {
             setDemoMessage(error instanceof Error ? error.message : "Unable to open the demo challenge.");

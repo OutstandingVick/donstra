@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { afterEach, test } from "node:test";
-import { demoReceipts } from "../../data/receipts";
+import { demoReceipts, queueForReceipt } from "../../data/receipts";
 import { openDemoChallenge, readDemoRuns } from "./demo-session";
 
 const originalWindow = globalThis.window;
@@ -25,6 +25,7 @@ test("opening a demo challenge stores a local-only transition without fabricatin
   assert.equal(challenged.verdict, "pending");
   assert.equal(challenged.transactions.find((transaction) => transaction.label === "Challenge")?.hash, null);
   assert.equal(challenged.metadata.onchainChallenge, false);
+  assert.equal(queueForReceipt(challenged), "active");
   assert.equal(readDemoRuns()[0]?.id, source.id);
   assert.throws(() => openDemoChallenge(challenged), /not eligible/);
 });
