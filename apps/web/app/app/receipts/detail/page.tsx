@@ -16,14 +16,14 @@ export default function ReceiptDetailPage() {
 
 function ReceiptDetail() {
   const id = useSearchParams().get("id") ?? "";
-  const { data: receipt, loading, error, config } = useProtocolReceipt(id);
+  const { data: receipt, loading, error } = useProtocolReceipt(id);
   if (loading || error || !receipt) return <div className="mx-auto w-full max-w-[100rem]"><Link href="/app/receipts" className="inline-flex min-h-11 items-center gap-2 text-sm text-white/60"><ArrowLeft size={16} aria-hidden="true" />All receipts</Link><LoadNotice loading={loading} error={error ?? (!id ? "Select a receipt from the receipt index." : null)} empty={!loading && !error && !receipt} noun="receipt" /></div>;
   const tone = receipt.verdict === "reasonable" ? "good" : receipt.verdict === "negligent" || receipt.verdict === "fabricated" ? "danger" : "warning";
 
   return <article className="mx-auto w-full max-w-[100rem]">
     <Link href="/app/receipts" className="mb-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-white/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#4BED86]"><ArrowLeft size={16} aria-hidden="true" />All receipts</Link>
     <PageHeader eyebrow="Forensic record" title="Receipt detail" description="A permanent, machine-readable chain from prior testimony to economic outcome." action={<div className="grid justify-items-start gap-3 sm:justify-items-end"><StatusBadge label={receipt.verdict} tone={tone} /><ReceiptActions receipt={receipt} /></div>} />
-    <DemoBanner live={config.mode === "live"} />
+    <DemoBanner live={receipt.source === "live"} />
 
     <section className="mt-8 overflow-hidden rounded-xl border border-white/10 bg-[#0A1109]" aria-labelledby="identity-heading">
       <div className="border-b border-white/10 p-5 sm:p-6"><p className="m-0 text-xs font-semibold uppercase tracking-[0.12em] text-white/50">Receipt ID</p><div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"><h2 id="identity-heading" className="m-0 break-all font-mono text-sm font-medium text-white/90">{receipt.id}</h2><CopyValue value={receipt.id} label="Copy receipt ID" /></div></div>

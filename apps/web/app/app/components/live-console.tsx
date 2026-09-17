@@ -16,9 +16,11 @@ export function LiveConsole() {
   const [running, setRunning] = useState(false);
   const [generatedReceiptId, setGeneratedReceiptId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const outcomeRef = useRef<HTMLDivElement | null>(null);
   const scenario = scenarios[selected];
 
   useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
+  useEffect(() => { if (generatedReceiptId) outcomeRef.current?.scrollIntoView({ block: "center" }); }, [generatedReceiptId]);
 
   function selectScenario(next: ScenarioKey) {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -53,7 +55,7 @@ export function LiveConsole() {
       <ScenarioSummary scenario={scenario} />
       <ComparisonTraces scenario={scenario} visibleSteps={visibleSteps} />
       <ProtocolTimeline stages={scenario.timeline} completedStages={Math.min(visibleSteps, 6)} />
-      {generatedReceiptId && <ScenarioOutcome scenario={scenario} receiptId={generatedReceiptId} />}
+      {generatedReceiptId && <div ref={outcomeRef}><ScenarioOutcome scenario={scenario} receiptId={generatedReceiptId} /></div>}
       <DecisionInspector scenario={scenario} />
     </div>
   );

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { getProtocolAdapter } from ".";
+import { readDemoRuns } from "./demo-session";
 import type { ActionPhase, AgentRecord, DeploymentRecord, Hex, LifecycleAction, ReceiptRecord } from "./types";
 
 type LoadState<T> = { data: T; loading: boolean; error: string | null; refresh: () => Promise<void> };
@@ -37,13 +38,17 @@ function useAdapterData<T>(initial: T, loader: () => Promise<T>): LoadState<T> {
 
 export function useProtocolReceipts() {
   const adapter = useMemo(() => getProtocolAdapter(), []);
-  const loader = useCallback(() => adapter.listReceipts(), [adapter]);
+  const loader = useCallback(async () => {
+    const demos = readDemoRuns();
+    const receipts = await adapter.listReceipts();
+    return [...demos, ...receipts.filter((receipt) => !demos.some((demo) => demo.id === receipt.id))];
+  }, [adapter]);
   return { ...useAdapterData<ReceiptRecord[]>([], loader), config: adapter.getConfig() };
 }
 
 export function useProtocolReceipt(id: string) {
   const adapter = useMemo(() => getProtocolAdapter(), []);
-  const loader = useCallback(() => adapter.getReceipt(id), [adapter, id]);
+  const loader = useCallback(async () => readDemoRuns().find((receipt) => receipt.id === id) ?? adapter.getReceipt(id), [adapter, id]);
   return { ...useAdapterData<ReceiptRecord | null>(null, loader), config: adapter.getConfig() };
 }
 
